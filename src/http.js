@@ -11,7 +11,7 @@ function htmlStructure({ css, app }) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Woop</title>
+  <title>Document</title>
   ${css || ''}
 </head>
 
@@ -31,9 +31,9 @@ http.createServer(function (req, res) {
   const parsedUrl = url.parse(req.url);
   // extract URL path
   let pathname = path.join(__dirname, `../public/${parsedUrl.pathname}`);
-  // based on the URL path, extract the file extention. e.g. .js, .doc, ...
+  // based on the URL path, extract the file extension. e.g. .js, .doc, ...
   const ext = path.parse(pathname).ext;
-  // maps file extention to MIME typere
+  // maps file extension to MIME type
   const map = {
     '.ico': 'image/x-icon',
     '.html': 'text/html',
@@ -51,14 +51,14 @@ http.createServer(function (req, res) {
 
   fs.exists(pathname, function (exist) {
     if (!exist || pathname === path.join(__dirname, '../public/')) {
-      const app = require('./app/app')();
+      const app = require('../app')();
       const html = htmlStructure({ app });
       res.setHeader('Content-type', 'text/html');
       res.end(html);
       return;
     }
 
-    // if is a directory search for index file matching the extention
+    // if is a directory search for index file matching the extension
     if (fs.statSync(pathname).isDirectory()) pathname += '/index' + ext;
 
     // read file from file system

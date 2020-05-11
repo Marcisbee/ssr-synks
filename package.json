@@ -2,7 +2,7 @@
   "name": "ssr-synks",
   "version": "0.1.0",
   "description": "",
-  "main": "src/index.js",
+  "main": "src/index.tsx",
   "scripts": {
     "start": "node src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,7 +11,7 @@
     "type": "git",
     "url": "git+https://github.com/Marcisbee/ssr-synks.git"
   },
-  "author": "Macis <marcisbergmanis@gmail.com> Bergmanis",
+  "author": "Marcis <marcisbergmanis@gmail.com> Bergmanis",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Marcisbee/ssr-synks/issues"
