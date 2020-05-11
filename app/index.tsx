@@ -1,7 +1,15 @@
-export default function Index() {
+function h() {
+  return 'hey';
+}
+
+export default function Index(props, [state = new Date(), update]) {
+  setTimeout(update, 1000, new Date());
+
   return (
     <div>
-      <h1>Hello world</h1>
+      <h1>Hello {state}</h1>
     </div>
   );
 }
+
+console.log(Index(null, [undefined, () => {}]));
