@@ -25,5 +25,5 @@ addHook(".ts", {
 
 addHook(".tsx", {
   transforms: ["imports", "typescript", "jsx"],
-  jsxPragma: 'h'
+  jsxPragma: 'Ssr.h'
 });

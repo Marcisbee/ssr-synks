@@ -1,15 +1,11 @@
-function h() {
-  return 'hey';
-}
+import * as Ssr from 'ssr-synks';
 
-export default function Index(props, [state = new Date(), update]) {
-  setTimeout(update, 1000, new Date());
+export default function Index(props) {
+  setTimeout(() => this.next(), 1000);
 
   return (
     <div>
-      <h1>Hello {state}</h1>
+      <p>Hello {new Date().toISOString()} | {props.sessionId}</p>
     </div>
   );
 }
-
-console.log(Index(null, [undefined, () => {}]));

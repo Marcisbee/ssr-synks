@@ -2,7 +2,10 @@ const http = require('http');
 const url = require('url');
 const fs = require('fs');
 const path = require('path');
-const port = 4444;
+const nodeCookie = require('node-cookie');
+const APP = require('./app');
+const sessionController = require('./sessionController');
+const config = require('./config');
 
 function htmlStructure({ css, app }) {
   return `<!DOCTYPE html>
@@ -17,14 +20,13 @@ function htmlStructure({ css, app }) {
 
 <body>
   ${app || ''}
-  <script type="module" src="./index.js"></script>
+  <script type="module" src="./client.js"></script>
 </body>
 
 </html>`;
 }
 
 http.createServer(function (req, res) {
-
   console.log(`${req.method} ${req.url}`);
 
   // parse URL
@@ -50,11 +52,30 @@ http.createServer(function (req, res) {
   };
 
   fs.exists(pathname, function (exist) {
-    if (!exist || pathname === path.join(__dirname, '../public/')) {
-      const app = require('../app')();
-      const html = htmlStructure({ app });
+    if ((!exist && ext === '') || pathname === path.join(__dirname, '../public/')) {
+      const cookie = nodeCookie.get(req, config.cookie.name, config.cookie.secret, true);
+      let sessionId = cookie;
+
+      if (!cookie) {
+        sessionId = Math.random();
+        nodeCookie.create(res, config.cookie.name, sessionId, {}, config.cookie.secret, true);
+      }
+
+      const session = sessionController.create(sessionId);
+      const app = session.html ? session : APP({ sessionId });
+
+      session.html = app.html;
+      session.tree = app.tree;
+
+      const html = htmlStructure({ app: app.html });
       res.setHeader('Content-type', 'text/html');
       res.end(html);
+      return;
+    }
+
+    if (!exist) {
+      res.statusCode = 404;
+      res.end(`File not found`);
       return;
     }
 
@@ -65,6 +86,7 @@ http.createServer(function (req, res) {
     fs.readFile(pathname, function (err, data) {
       if (err) {
         res.statusCode = 500;
+        res.setHeader('Content-type', 'text/plain');
         res.end(`Error getting the file: ${err}.`);
       } else {
         // if the file is found, set Content-type and send data
@@ -73,6 +95,6 @@ http.createServer(function (req, res) {
       }
     });
   });
-}).listen(parseInt(port));
+}).listen(parseInt(config.http.port));
 
-console.log(`Server listening on port ${port}`);
+console.log(`Server listening on port ${config.http.port}`);
