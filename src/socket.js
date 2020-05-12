@@ -31,7 +31,7 @@ wss.on('connection', function connection(ws) {
   ws.on('message', (message) => {
     const [type, value] = JSON.parse(message);
 
-    if (type === 'join') {
+    if (type === 'join' && value) {
       if (session) return;
 
       sessionId = nodeCookie.get({
@@ -39,6 +39,11 @@ wss.on('connection', function connection(ws) {
           cookie: `${config.cookie.name}=${value}`
         }
       }, config.cookie.name, config.cookie.secret, true);
+
+      if (!sessionId) {
+        console.log('Session is not valid');
+        return;
+      }
 
       session = sessionController.get(sessionId);
 
