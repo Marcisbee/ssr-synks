@@ -1,16 +1,6 @@
-(function connect() {
-  const ws = new WebSocket("ws://localhost:52275");
-
+module.exports = function connect(helpers, name, port, session_name) {
+  const ws = new WebSocket(`ws://localhost:${port}`);
   const events = {};
-
-  function getCookie(/* name */) {
-    // return (
-    //   document.cookie.match(
-    //     new RegExp(`${name}=([^; |$]+)`)
-    //   ) || []
-    // )[1];
-    return (document.cookie.match(/ssr_session=([^; |$]+)/) || [])[1];
-  }
 
   Object.keys(window).forEach(key => {
     if (/^on/.test(key)) {
@@ -31,7 +21,7 @@
 
     ws.send(JSON.stringify([
       'join',
-      getCookie()
+      helpers.getCookie(document.cookie, name) || window[session_name]
     ]));
 
     events.onclick = [
@@ -68,11 +58,11 @@
       // event.code is usually 1006 in this case
       console.log('[close] Connection died');
 
-      setTimeout(connect, 3000);
+      setTimeout(connect, 3000, helpers, name, port);
     }
   };
 
   ws.onerror = function (error) {
     // connection.innerHTML = `error: ${error.message}`;
   };
-})();
+}

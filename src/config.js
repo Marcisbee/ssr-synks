@@ -9,4 +9,7 @@ module.exports = {
   socket: {
     port: 52275,
   },
+  session: {
+    name: 'SSR_SESSION',
+  },
 }

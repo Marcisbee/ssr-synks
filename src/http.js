@@ -6,6 +6,23 @@ const nodeCookie = require('node-cookie');
 const build = require('./build');
 const config = require('./config');
 
+function getCookie(cookie, name) {
+  return (
+    cookie.match(
+      new RegExp(`${name}=([^; |$]+)`)
+    ) || []
+  )[1];
+}
+
+function createClientJs() {
+  const clientJs = require('./client').toString();
+  const helpers = `{ getCookie: ${getCookie.toString()} }`;
+  const name = JSON.stringify(config.cookie.name);
+  const port = config.socket.port;
+
+  return `(${clientJs})(${helpers}, ${name}, ${port}, ${config.session.name})`;
+}
+
 function htmlStructure({ css, app, sessionId }) {
   return `<!DOCTYPE html>
 <html lang="en">
@@ -14,6 +31,9 @@ function htmlStructure({ css, app, sessionId }) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <script>
+    window.${config.session.name} = ${JSON.stringify(sessionId)};
+  </script>
   ${css || ''}
 </head>
 
@@ -50,10 +70,17 @@ http.createServer(function (req, res) {
     '.doc': 'application/msword'
   };
 
+  if (parsedUrl.pathname === '/client.js') {
+    res.setHeader('Content-type', map[ext]);
+    res.end(createClientJs());
+    return;
+  }
+
   fs.exists(pathname, function (exist) {
     if ((!exist && ext === '') || pathname === path.join(__dirname, '../public/')) {
       const cookie = nodeCookie.get(req, config.cookie.name, config.cookie.secret, true);
       let sessionId = cookie;
+      let sessionIdRaw = getCookie(req.headers.cookie, config.cookie.name);
 
       if (!cookie) {
         sessionId = Math.random();
@@ -61,7 +88,7 @@ http.createServer(function (req, res) {
       }
 
       const app = build(sessionId);
-      const html = htmlStructure({ app: app.html });
+      const html = htmlStructure({ app: app.html, sessionId: sessionIdRaw });
 
       res.setHeader('Content-type', 'text/html');
       res.end(html);
