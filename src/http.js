@@ -14,10 +14,6 @@ function htmlStructure({ css, app, sessionId }) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
-  <script>
-    // @TODO:
-    window.SSR_SESSION = ${JSON.stringify(sessionId)};
-  </script>
   ${css || ''}
 </head>
 
