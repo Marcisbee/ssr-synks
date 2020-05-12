@@ -3,11 +3,10 @@ const url = require('url');
 const fs = require('fs');
 const path = require('path');
 const nodeCookie = require('node-cookie');
-const APP = require('./app');
-const sessionController = require('./sessionController');
+const build = require('./build');
 const config = require('./config');
 
-function htmlStructure({ css, app }) {
+function htmlStructure({ css, app, sessionId }) {
   return `<!DOCTYPE html>
 <html lang="en">
 
@@ -15,6 +14,10 @@ function htmlStructure({ css, app }) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <script>
+    // @TODO:
+    window.SSR_SESSION = ${JSON.stringify(sessionId)};
+  </script>
   ${css || ''}
 </head>
 
@@ -61,13 +64,9 @@ http.createServer(function (req, res) {
         nodeCookie.create(res, config.cookie.name, sessionId, {}, config.cookie.secret, true);
       }
 
-      const session = sessionController.create(sessionId);
-      const app = session.html ? session : APP({ sessionId });
-
-      session.html = app.html;
-      session.tree = app.tree;
-
+      const app = build(sessionId);
       const html = htmlStructure({ app: app.html });
+
       res.setHeader('Content-type', 'text/html');
       res.end(html);
       return;

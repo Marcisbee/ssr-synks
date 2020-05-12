@@ -1,5 +1,6 @@
 const WebSocket = require('ws');
 const nodeCookie = require('node-cookie');
+const build = require('./build');
 const config = require('./config');
 const sessionController = require('./sessionController');
 
@@ -15,8 +16,6 @@ wss.on('connection', function connection(ws) {
       p: newTree,
     }));
   };
-
-  // @TODO: Reconnect with clean session
 
   ws.on('close', () => {
     sessionController.unsubscribe(sessionId, handler);
@@ -35,6 +34,15 @@ wss.on('connection', function connection(ws) {
       }, config.cookie.name, config.cookie.secret, true);
 
       session = sessionController.get(sessionId);
+
+      if (!session) {
+        const app = build(sessionId);
+        session = sessionController.get(sessionId);
+
+        session.html = app.html;
+        session.tree = app.tree;
+      }
+
       sessionController.subscribe(sessionId, handler);
 
       return;

@@ -6,7 +6,7 @@ const h = require("./core/h");
 
 const Index = require(resolve('./index.tsx')).default;
 
-function app(props = {}) {
+function Entry(props = {}, { renderHtml = false } = {}) {
   let events = [];
   const tree = h(Index, props);
   const html = render(tree, {
@@ -21,4 +21,4 @@ function app(props = {}) {
   };
 }
 
-module.exports = app;
+module.exports = Entry;
