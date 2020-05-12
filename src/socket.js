@@ -7,14 +7,21 @@ const sessionController = require('./sessionController');
 const wss = new WebSocket.Server({ port: config.socket.port });
 
 wss.on('connection', function connection(ws) {
+  const action = {
+    update(data) {
+      ws.send(
+        JSON.stringify(
+          ['update', data]
+        )
+      );
+    },
+  };
+
   let sessionId;
   let session;
   let handler = (newTree, oldTree) => {
     // console.log('tree updated', { newTree, oldTree });
-    ws.send(JSON.stringify({
-      t: 'u',
-      p: newTree,
-    }));
+    action.update(newTree);
   };
 
   ws.on('close', () => {
@@ -22,9 +29,9 @@ wss.on('connection', function connection(ws) {
   });
 
   ws.on('message', (message) => {
-    const [type, value] = message.split(':');
+    const [type, value] = JSON.parse(message);
 
-    if (type === 's1') {
+    if (type === 'join') {
       if (session) return;
 
       sessionId = nodeCookie.get({
@@ -41,6 +48,8 @@ wss.on('connection', function connection(ws) {
 
         session.html = app.html;
         session.tree = app.tree;
+
+        action.update(app.html);
       }
 
       sessionController.subscribe(sessionId, handler);

@@ -10,31 +10,33 @@ module.exports = function render(node, context) {
   const { type, props, children } = node;
 
   if (type instanceof Function) {
-    const scope = {
-      next() {
-        const rendered = selfRender();
+    const update = (newState) => {
+      const rendered = selfRender(node.state = newState);
 
-        if (context.session && context.session.events) {
-          context.session.html = rendered;
-          context.session.events.forEach((event) => {
-            event(rendered);
-          });
-        }
-      },
+      if (context.session && context.session.events) {
+        context.session.html = rendered;
+        context.session.events.forEach((event) => {
+          event(rendered);
+        });
+      }
     };
 
-    function selfRender() {
-      const output = type.apply(scope, [{
-        ...props,
-        children,
-      }]);
+    function selfRender(state) {
+      const output = type(
+        {
+          ...props,
+          children,
+        },
+        state,
+        update
+      );
 
       const childNodes = render(output);
 
       return `<!-- ${type.name}() -->${childNodes}`;
     }
 
-    return selfRender();
+    return selfRender(node.state);
   }
 
   const childNodes = render(children);

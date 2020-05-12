@@ -4,9 +4,10 @@ const sessionController = require("./sessionController");
 const render = require("./core/render");
 const h = require("./core/h");
 
-const Index = require(resolve('./index.tsx')).default;
-
 function Entry(props = {}, { renderHtml = false } = {}) {
+  const indexPath = resolve('./index.tsx');
+  const Index = require(indexPath).default;
+
   let events = [];
   const tree = h(Index, props);
   const html = render(tree, {

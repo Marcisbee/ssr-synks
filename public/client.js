@@ -28,9 +28,11 @@
 
   ws.onopen = function (e) {
     console.log("[open] Connection established");
-    console.log("Sending to server");
 
-    ws.send(`s1:${getCookie()}`);
+    ws.send(JSON.stringify([
+      'join',
+      getCookie()
+    ]));
 
     events.onclick = [
       // [increment, (e) => {
@@ -43,10 +45,10 @@
   };
 
   ws.onmessage = function (event) {
-    const update = JSON.parse(event.data);
+    const [type, value] = JSON.parse(event.data);
 
-    if (update.t === 'u') {
-      document.body.innerHTML = update.p;
+    if (type === 'update') {
+      document.body.innerHTML = value;
     }
 
     // Object.keys(update).forEach((key) => {
@@ -72,7 +74,5 @@
 
   ws.onerror = function (error) {
     // connection.innerHTML = `error: ${error.message}`;
-    console.error(error);
-    console.error(`[error] ${error.message}`);
   };
 })();
