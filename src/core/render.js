@@ -1,6 +1,8 @@
-module.exports = function render(node, context) {
+const asyncMap = require('../utils/async-map');
+
+module.exports = async function render(node, previousNode, context) {
   if (node instanceof Array) {
-    return node.map(render).join('');
+    return (await asyncMap(node, render)).join('');
   }
 
   if (!node || typeof node.type === 'undefined') {
@@ -10,8 +12,9 @@ module.exports = function render(node, context) {
   const { type, props, children } = node;
 
   if (type instanceof Function) {
-    const update = (newState) => {
-      const rendered = selfRender(node.state = newState);
+
+    async function update(newState) {
+      const rendered = await selfRender(node.state = newState);
 
       if (context.session && context.session.events) {
         context.session.html = rendered;
@@ -21,8 +24,8 @@ module.exports = function render(node, context) {
       }
     };
 
-    function selfRender(state) {
-      const output = type(
+    async function selfRender(state) {
+      const output = await type(
         {
           ...props,
           children,
@@ -31,15 +34,17 @@ module.exports = function render(node, context) {
         update
       );
 
-      const childNodes = render(output);
+      const childNodes = await render(output, node.instance);
+
+      node.instance = childNodes;
 
       return `<!-- ${type.name}() -->${childNodes}`;
     }
 
-    return selfRender(node.state);
+    return await selfRender(node.state);
   }
 
-  const childNodes = render(children);
+  const childNodes = await render(children, previousNode && previousNode.children);
 
   return `<${type}>${childNodes}</${type}>`;
 }

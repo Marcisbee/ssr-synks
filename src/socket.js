@@ -8,6 +8,13 @@ const wss = new WebSocket.Server({ port: config.socket.port });
 
 wss.on('connection', function connection(ws) {
   const action = {
+    init(data) {
+      ws.send(
+        JSON.stringify(
+          ['init', data]
+        )
+      );
+    },
     update(data) {
       ws.send(
         JSON.stringify(
@@ -28,7 +35,7 @@ wss.on('connection', function connection(ws) {
     sessionController.unsubscribe(sessionId, handler);
   });
 
-  ws.on('message', (message) => {
+  ws.on('message', async (message) => {
     const [type, value] = JSON.parse(message);
 
     if (type === 'join' && value) {
@@ -48,16 +55,12 @@ wss.on('connection', function connection(ws) {
       session = sessionController.get(sessionId);
 
       if (!session) {
-        const app = build(sessionId);
+        await build(sessionId);
         session = sessionController.get(sessionId);
-
-        session.html = app.html;
-        session.tree = app.tree;
-
-        action.update(app.html);
       }
 
       sessionController.subscribe(sessionId, handler);
+      action.update(session.html);
 
       return;
     }

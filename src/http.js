@@ -76,7 +76,7 @@ http.createServer(function (req, res) {
     return;
   }
 
-  fs.exists(pathname, function (exist) {
+  fs.exists(pathname, async function (exist) {
     if ((!exist && ext === '') || pathname === path.join(__dirname, '../public/')) {
       const cookie = nodeCookie.get(req, config.cookie.name, config.cookie.secret, true);
       let sessionId = cookie;
@@ -87,7 +87,7 @@ http.createServer(function (req, res) {
         nodeCookie.create(res, config.cookie.name, sessionId, {}, config.cookie.secret, true);
       }
 
-      const app = build(sessionId);
+      const app = await build(sessionId);
       const html = htmlStructure({ app: app.html, sessionId: sessionIdRaw });
 
       res.setHeader('Content-type', 'text/html');
