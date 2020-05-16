@@ -22,7 +22,7 @@ function createClientJs() {
   const name = JSON.stringify(config.cookie.name);
   const port = config.socket.port;
 
-  return `(${clientJs})(${helpers}, ${name}, ${port}, ${config.session.name})`;
+  return `(${clientJs})(window, document, ${helpers}, ${name}, ${port}, ${config.session.name})`;
 }
 
 function htmlStructure({ css, app, sessionId }) {
