@@ -64,28 +64,40 @@ async function renderArray(current, context) {
 }
 
 async function renderComponent(current, context) {
-  const { previous = {} } = context;
   const props = {
     ...current.props,
     children: current.children,
   };
+  // Component state update function
   const update = async (newState) => {
+    // Update state
     current.state = newState instanceof Function
       ? newState(current.state)
       : newState;
 
-    const rendered = await render(current, newContext);
-    newContext.previous = current
+    // Render new tree with new state
+    const rendered = await render(current, context);
 
-    context.update(rendered, previous);
+    // Send update to browser
+    context.update(rendered, context.previous);
   };
+
+  // Pass component state to next rendered tree
+  if (context.previous && !current.instance && context.previous.type === current.type) {
+    current.state = context.previous.state;
+  }
+
+  // Execute component function
   const output = current.type(props, current.state, update);
-  const newContext = {
-    ...context,
-    previous: context.previous && context.previous.instance,
-  };
 
-  current.instance = await render(output, newContext);
+  // Set previous tree as it's instance because we are rendering components instance
+  context.previous = context.previous ? context.previous.instance : {};
+  current.instance = await render(output, context);
+
+  // Set current tree as previous tree
+  if (context.previous) {
+    Object.assign(context.previous, current);
+  }
 
   return current;
 }
