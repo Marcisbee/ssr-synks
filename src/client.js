@@ -60,7 +60,7 @@ module.exports = function connect(win, doc, helpers, name, port, session_name) {
       // event.code is usually 1006 in this case
       console.log('[close] Connection died');
 
-      setTimeout(win, doc, connect, 3000, helpers, name, port);
+      setTimeout(connect, 3000, win, doc, helpers, name, port);
     }
   };
 

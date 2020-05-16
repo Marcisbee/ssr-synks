@@ -10,7 +10,7 @@ module.exports = async function build(sessionId) {
     return session;
   }
 
-  const app = session.html ? session : await Entry({ sessionId });
+  const app = await Entry({ sessionId });
 
   session.message = app.message;
   session.html = app.html;

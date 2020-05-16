@@ -82,6 +82,7 @@ async function renderComponent(current, context) {
     context.update(rendered, context.previous);
   };
 
+  // @TODO: Handle destroy tree and methods
   // Pass component state to next rendered tree
   if (context.previous && !current.instance && context.previous.type === current.type) {
     current.state = context.previous.state;
