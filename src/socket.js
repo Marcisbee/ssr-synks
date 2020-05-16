@@ -32,6 +32,7 @@ wss.on('connection', function connection(ws) {
 
   ws.on('close', () => {
     sessionController.unsubscribe(sessionId, handler);
+    sessionController.remove(sessionId);
   });
 
   ws.on('message', async (message) => {

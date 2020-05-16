@@ -1,10 +1,12 @@
 const createHTML = require('./create-html');
+const destroyTree = require('./destroy-tree');
 
 module.exports = async function mount(current, previous, update) {
   if (!(current instanceof Array)) {
     current = [current];
   }
 
+  let closed = false;
   let root;
   const methods = {};
   const context = {
@@ -14,11 +16,20 @@ module.exports = async function mount(current, previous, update) {
     root: current,
     methods,
     async update(node, previous) {
+      if (closed) {
+        return;
+      }
+
       // @TODO: Remove previous methods
       const diff = await createHTML(node, previous);
 
       if (update) {
-        update(node.path, node.type, diff, root, context);
+        try {
+          update(node.path, node.type, diff, root, context);
+        } catch (e) {
+          // Session is cleared or other error happened
+          closed = true;
+        }
       }
     },
   };
@@ -70,6 +81,7 @@ async function renderComponent(current, context) {
   };
   // Component state update function
   const update = async (newState) => {
+    if (current.destroyed) return;
     // Update state
     current.state = newState instanceof Function
       ? newState(current.state)
@@ -82,7 +94,7 @@ async function renderComponent(current, context) {
     context.update(rendered, context.previous);
   };
 
-  // @TODO: Handle destroy tree and methods
+  // @TODO: Handle destroy methods
   // Pass component state to next rendered tree
   if (context.previous && !current.instance && context.previous.type === current.type) {
     current.state = context.previous.state;
@@ -94,6 +106,8 @@ async function renderComponent(current, context) {
   // Set previous tree as it's instance because we are rendering components instance
   context.previous = context.previous ? context.previous.instance : {};
   current.instance = await render(output, context);
+
+  destroyTree(context.previous);
 
   // Set current tree as previous tree
   if (context.previous) {

@@ -1,3 +1,5 @@
+const destroyTree = require("./core/destroy-tree");
+
 const sessions = {};
 
 module.exports = {
@@ -34,6 +36,7 @@ module.exports = {
     return sessions[id];
   },
   remove(id) {
+    destroyTree(sessions[id].tree);
     delete sessions[id];
   },
 }

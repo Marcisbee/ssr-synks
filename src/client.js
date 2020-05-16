@@ -35,7 +35,23 @@ module.exports = function connect(win, doc, helpers, name, port, session_name) {
 
         if (root) {
           root.outerHTML = diff;
+          return;
         }
+
+        const [, parentPath, childPath] = path.match(/(.*)\.(\d+)$/, '') || [];
+        if (typeof parentPath === 'undefined' || typeof childPath === 'undefined') return;
+
+        const parent = doc.querySelector(`[data-sx="${parentPath}"]`);
+
+        if (!(parent instanceof Node)) return;
+
+        const child = parent.childNodes[childPath];
+
+        if (!child) return;
+
+        // `child` is text or comment node
+
+        child.textContent = diff;
 
         return;
       }
@@ -65,6 +81,7 @@ module.exports = function connect(win, doc, helpers, name, port, session_name) {
   };
 
   ws.onerror = function (error) {
+    ws.close();
     // connection.innerHTML = `error: ${error.message}`;
   };
 }
