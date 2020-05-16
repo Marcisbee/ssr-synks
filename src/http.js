@@ -80,7 +80,9 @@ http.createServer(function (req, res) {
 
   fs.exists(pathname, async function (exist) {
     if ((!exist && ext === '') || pathname === path.join(__dirname, '../public/')) {
-      const cookie = nodeCookie.get(req, config.cookie.name, config.cookie.secret, true);
+      // @TODO: figure out sessions
+      // const cookie = nodeCookie.get(req, config.cookie.name, config.cookie.secret, true);
+      const cookie = null;
       let sessionId = cookie;
       let sessionIdRaw = getCookie(req.headers.cookie, config.cookie.name);
 
