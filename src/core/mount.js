@@ -1,6 +1,6 @@
 const createHTML = require('./create-html');
 
-module.exports = async function mount(current, previous, update = () => { }) {
+module.exports = async function mount(current, previous, update) {
   if (!(current instanceof Array)) {
     current = [current];
   }
@@ -16,7 +16,10 @@ module.exports = async function mount(current, previous, update = () => { }) {
     async update(node, previous) {
       // @TODO: Remove previous methods
       const diff = await createHTML(node, previous);
-      update(node.path, node.type, diff, root, context);
+
+      if (update) {
+        update(node.path, node.type, diff, root, context);
+      }
     },
   };
 

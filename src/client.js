@@ -1,10 +1,10 @@
-module.exports = function connect(helpers, name, port, session_name) {
+module.exports = function connect(win, doc, helpers, name, port, session_name) {
   const ws = new WebSocket(`ws://localhost:${port}`);
 
   ws.onopen = function (e) {
     console.log("[open] Connection established");
 
-    window.__sx = (e) => {
+    win.__sx = (e) => {
       ws.send(JSON.stringify([
         'event',
         e.target.getAttribute('data-sx'),
@@ -18,7 +18,7 @@ module.exports = function connect(helpers, name, port, session_name) {
 
     ws.send(JSON.stringify([
       'join',
-      helpers.getCookie(document.cookie, name) || window[session_name]
+      helpers.getCookie(doc.cookie, name) || win[session_name]
     ]));
 
     // ws.send("My name is John");
@@ -31,7 +31,7 @@ module.exports = function connect(helpers, name, port, session_name) {
       const [path, diff] = data;
 
       if (path) {
-        const root = document.querySelector(`[data-sx="${path}"]`);
+        const root = doc.querySelector(`[data-sx="${path}"]`);
 
         if (root) {
           root.outerHTML = diff;
@@ -40,7 +40,7 @@ module.exports = function connect(helpers, name, port, session_name) {
         return;
       }
 
-      document.body.innerHTML = diff;
+      doc.body.innerHTML = diff;
     }
 
     // Object.keys(update).forEach((key) => {
