@@ -1,44 +1,46 @@
 module.exports = function connect(helpers, name, port, session_name) {
   const ws = new WebSocket(`ws://localhost:${port}`);
-  const events = {};
-
-  Object.keys(window).forEach(key => {
-    if (/^on/.test(key)) {
-      window.addEventListener(key.slice(2), event => {
-        if (!(events[key] instanceof Array)) return;
-
-        events[key].forEach(([el, fn]) => {
-          if (el !== event.target) return;
-
-          fn(event);
-        });
-      });
-    }
-  });
 
   ws.onopen = function (e) {
     console.log("[open] Connection established");
+
+    window.__sx = (e) => {
+      ws.send(JSON.stringify([
+        'event',
+        e.target.getAttribute('data-sx'),
+        `on${event.type}`,
+        {
+          x: e.clientX,
+          y: e.clientY,
+        }
+      ]));
+    };
 
     ws.send(JSON.stringify([
       'join',
       helpers.getCookie(document.cookie, name) || window[session_name]
     ]));
 
-    events.onclick = [
-      // [increment, (e) => {
-      //   console.log(e, e.target, e.target.id);
-      //   ws.send(`fn:${e.target.id}`);
-      // }]
-    ];
-
     // ws.send("My name is John");
   };
 
   ws.onmessage = function (event) {
-    const [type, value] = JSON.parse(event.data);
+    const [type, ...data] = JSON.parse(event.data);
 
     if (type === 'update') {
-      document.body.innerHTML = value;
+      const [path, diff] = data;
+
+      if (path) {
+        const root = document.querySelector(`[data-sx="${path}"]`);
+
+        if (root) {
+          root.outerHTML = diff;
+        }
+
+        return;
+      }
+
+      document.body.innerHTML = diff;
     }
 
     // Object.keys(update).forEach((key) => {

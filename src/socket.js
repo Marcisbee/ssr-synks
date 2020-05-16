@@ -15,10 +15,10 @@ wss.on('connection', function connection(ws) {
         )
       );
     },
-    update(data) {
+    update(path, data) {
       ws.send(
         JSON.stringify(
-          ['update', data]
+          ['update', path, data]
         )
       );
     },
@@ -26,9 +26,8 @@ wss.on('connection', function connection(ws) {
 
   let sessionId;
   let session;
-  let handler = (newTree, oldTree) => {
-    // console.log('tree updated', { newTree, oldTree });
-    action.update(newTree);
+  let handler = (path, tree) => {
+    action.update(path, tree);
   };
 
   ws.on('close', () => {
@@ -36,10 +35,18 @@ wss.on('connection', function connection(ws) {
   });
 
   ws.on('message', async (message) => {
-    const [type, value] = JSON.parse(message);
+    const [type, ...data] = JSON.parse(message);
 
-    if (type === 'join' && value) {
+    if (type === 'event' && data.length > 0) {
+      const [path, name, event] = data;
+
+      sessionController.message(sessionId, path, name, event);
+      return;
+    }
+
+    if (type === 'join' && data.length > 0) {
       if (session) return;
+      const [value] = data;
 
       sessionId = nodeCookie.get({
         headers: {
@@ -60,7 +67,7 @@ wss.on('connection', function connection(ws) {
       }
 
       sessionController.subscribe(sessionId, handler);
-      action.update(session.html);
+      action.update(0, session.html);
 
       return;
     }

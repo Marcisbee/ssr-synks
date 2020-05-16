@@ -4,12 +4,21 @@ module.exports = {
   create(id) {
     return this.get(id) || (sessions[id] = {
       events: [],
-      tree: null,
+      tree: {},
+      message: null,
       html: null,
     });
   },
-  update(id, value) {
-    return Object.assign(this.get(id), value);
+  async message(id, path, name, event) {
+    const session = this.get(id);
+
+    return await session.message(path, name, event);
+  },
+  update(id, path, value) {
+    const session = this.get(id);
+    session.events.forEach((event) => event(path, value));
+
+    return session;
   },
   subscribe(id, handler) {
     const { events } = this.get(id);

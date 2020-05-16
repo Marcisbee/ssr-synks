@@ -12,7 +12,7 @@ function addHook(extension, options) {
         filePath,
       });
       const mapBase64 = Buffer.from(JSON.stringify(sourceMap)).toString("base64");
-      const suffix = `//# sourceMappingURL=data:application/json;charset=utf-8;base64,${mapBase64}`;
+      const suffix = `const { h } = require('ssr-synks');//# sourceMappingURL=data:application/json;charset=utf-8;base64,${mapBase64}`;
       return `${transformedCode}\n${suffix}`;
     },
     { exts: [extension] },
@@ -25,5 +25,5 @@ addHook(".ts", {
 
 addHook(".tsx", {
   transforms: ["imports", "typescript", "jsx"],
-  jsxPragma: 'Ssr.h'
+  jsxPragma: 'h'
 });

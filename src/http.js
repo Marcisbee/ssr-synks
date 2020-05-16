@@ -7,6 +7,8 @@ const build = require('./build');
 const config = require('./config');
 
 function getCookie(cookie, name) {
+  if (!cookie) return;
+
   return (
     cookie.match(
       new RegExp(`${name}=([^; |$]+)`)
@@ -88,7 +90,7 @@ http.createServer(function (req, res) {
       }
 
       const app = await build(sessionId);
-      const html = htmlStructure({ app: app.html, sessionId: sessionIdRaw });
+      const html = htmlStructure({ css: '', app: app.html, sessionId: sessionIdRaw });
 
       res.setHeader('Content-type', 'text/html');
       res.end(html);
@@ -117,6 +119,6 @@ http.createServer(function (req, res) {
       }
     });
   });
-}).listen(parseInt(config.http.port));
+}).listen(config.http.port);
 
 console.log(`Server listening on port ${config.http.port}`);
