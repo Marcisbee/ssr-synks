@@ -36,7 +36,7 @@ wss.on('connection', function connection(ws) {
   });
 
   ws.on('message', async (message) => {
-    const [type, ...data] = JSON.parse(message);
+    const [type, ...data] = JSON.parse(message.toString());
 
     if (type === 'event' && data.length > 0) {
       const [path, name, event] = data;
