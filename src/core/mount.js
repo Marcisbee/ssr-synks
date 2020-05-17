@@ -102,11 +102,11 @@ async function renderComponent(current, context) {
   // Execute component function
   const output = current.type(props, current.state, update);
 
+  destroyTree(context.previous, context.methods);
+
   // Set previous tree as it's instance because we are rendering components instance
   context.previous = context.previous ? context.previous.instance : {};
   current.instance = await render(output, context);
-
-  destroyTree(context.previous);
 
   // Set current tree as previous tree
   if (context.previous) {
