@@ -94,7 +94,6 @@ async function renderComponent(current, context) {
     context.update(rendered, context.previous);
   };
 
-  // @TODO: Handle destroy methods
   // Pass component state to next rendered tree
   if (context.previous && !current.instance && context.previous.type === current.type) {
     current.state = context.previous.state;
@@ -130,8 +129,9 @@ function updateProps(current, context) {
   const previousProps = Object.entries(context.props || {});
   const path = (current.path || []).join('.');
 
-  currentProps.forEach(([key, value]) => {
+  currentProps.forEach(([rawKey, value]) => {
     if (value instanceof Function) {
+      const key = rawKey.replace(/^on/, '');
       if (typeof context.methods[path] === 'undefined') {
         context.methods[path] = {};
       }

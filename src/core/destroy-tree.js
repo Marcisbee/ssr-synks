@@ -1,4 +1,5 @@
 module.exports = function destroyTree(tree) {
+  // @TODO: Handle destroy methods
   if (tree instanceof Array) {
     tree.forEach(destroyTree);
     return;

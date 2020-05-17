@@ -4,6 +4,8 @@ const sessionController = require("./sessionController");
 const h = require("./core/h");
 const mount = require("./core/mount");
 const createHTML = require("./core/create-html");
+const pathCompress = require("./core/path-compress");
+const pathDecompress = require("./core/path-decompress");
 
 module.exports = async function Entry(props = {}, { renderHtml = false } = {}) {
   const indexPath = resolve('./index.tsx');
@@ -11,8 +13,9 @@ module.exports = async function Entry(props = {}, { renderHtml = false } = {}) {
 
   const session = sessionController.get(props.sessionId);
 
-  function update(path, component, diff, root, context) {
-    sessionController.update(props.sessionId, path.join('.'), diff);
+  function update(rawPath, component, diff, root, context) {
+    const path = pathCompress(rawPath.join('.'));
+    sessionController.update(props.sessionId, path, diff);
   }
 
   const initialTree = h(Index, props);
@@ -21,7 +24,8 @@ module.exports = async function Entry(props = {}, { renderHtml = false } = {}) {
     tree,
   } = await mount(initialTree, undefined, update);
 
-  async function message(path, name, event) {
+  async function message(rawPath, name, event) {
+    const path = pathDecompress(rawPath);
     const methodsInPath = methods[path];
     if (methodsInPath && methodsInPath[name]) {
       return await methodsInPath[name](event);

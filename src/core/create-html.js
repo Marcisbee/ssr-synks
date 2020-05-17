@@ -1,3 +1,5 @@
+const pathCompress = require("./path-compress");
+
 module.exports = async function createHTML(current, previous) {
   if (typeof current === 'undefined' || current === null || current === NaN) return '';
   if (typeof current !== 'object') return String(current);
@@ -20,7 +22,7 @@ module.exports = async function createHTML(current, previous) {
 
   const attributes = Object.entries({
     ...props,
-    'data-sx': path.join('.'),
+    'data-sx': pathCompress(path.join('.')),
   }).map(([key, value]) => {
     const normalValue = value instanceof Function
       ? '__sx(event)'

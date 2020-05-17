@@ -1,5 +1,20 @@
 module.exports = function connect(win, doc, helpers, name, port, session_name) {
   const ws = new WebSocket(`ws://localhost:${port}`);
+  function syntheticEvent(event) {
+    switch (event.type) {
+      case 'click':
+      case 'mousedown': {
+        return {
+          x: event.clientX,
+          y: event.clientY,
+        };
+      }
+
+      default: {
+        return null;
+      }
+    }
+  }
 
   ws.onopen = function (e) {
     console.log("[open] Connection established");
@@ -8,11 +23,8 @@ module.exports = function connect(win, doc, helpers, name, port, session_name) {
       ws.send(JSON.stringify([
         'event',
         e.target.getAttribute('data-sx'),
-        `on${event.type}`,
-        {
-          x: e.clientX,
-          y: e.clientY,
-        }
+        event.type,
+        syntheticEvent(event),
       ]));
     };
 
@@ -28,20 +40,21 @@ module.exports = function connect(win, doc, helpers, name, port, session_name) {
     const [type, ...data] = JSON.parse(event.data);
 
     if (type === 'update') {
-      const [path, diff] = data;
+      const [rawPath, diff] = data;
 
-      if (path) {
-        const root = doc.querySelector(`[data-sx="${path}"]`);
+      if (rawPath) {
+        const root = doc.querySelector(`[data-sx="${rawPath}"]`);
 
         if (root) {
           root.outerHTML = diff;
           return;
         }
 
+        const path = win.atob(rawPath);
         const [, parentPath, childPath] = path.match(/(.*)\.(\d+)$/, '') || [];
         if (typeof parentPath === 'undefined' || typeof childPath === 'undefined') return;
 
-        const parent = doc.querySelector(`[data-sx="${parentPath}"]`);
+        const parent = doc.querySelector(`[data-sx="${win.btoa(parentPath)}"]`);
 
         if (!(parent instanceof Node)) return;
 
@@ -50,7 +63,6 @@ module.exports = function connect(win, doc, helpers, name, port, session_name) {
         if (!child) return;
 
         // `child` is text or comment node
-
         child.textContent = diff;
 
         return;
