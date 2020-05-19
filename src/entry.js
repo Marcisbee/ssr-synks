@@ -3,7 +3,7 @@ const sessionController = require("./sessionController");
 
 const h = require("./core/h");
 const mount = require("./core/mount");
-const createHTML = require("./core/create-html");
+const renderHTML = require("./core/render-html");
 const pathCompress = require("./core/path-compress");
 const pathDecompress = require("./core/path-decompress");
 
@@ -32,7 +32,7 @@ module.exports = async function Entry(props = {}, { renderHtml = false } = {}) {
     }
   };
 
-  const html = await createHTML(tree);
+  const html = await renderHTML(tree);
 
   return {
     events: session.events,

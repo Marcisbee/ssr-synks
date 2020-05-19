@@ -1,13 +1,13 @@
 const pathCompress = require("./path-compress");
 
-module.exports = async function createHTML(current, previous) {
+module.exports = async function renderHTML(current, previous) {
   if (typeof current === 'undefined' || current === null || current === NaN) return '';
   if (typeof current !== 'object') return String(current);
   if (current instanceof Array) {
     const nodes = [];
 
     for (const i in current) {
-      nodes.push(await createHTML(current[i], previous && previous[i]));
+      nodes.push(await renderHTML(current[i], previous && previous[i]));
     }
 
     return nodes.join('');
@@ -15,10 +15,10 @@ module.exports = async function createHTML(current, previous) {
   const { path, props, type, instance, children } = current;
 
   if (typeof instance !== 'undefined') {
-    return createHTML(instance, previous && previous.instance);
+    return renderHTML(instance, previous && previous.instance);
   }
 
-  const childNodes = children ? await createHTML(children, previous && previous.children) : '';
+  const childNodes = children ? await renderHTML(children, previous && previous.children) : '';
 
   const attributes = Object.entries({
     ...props,

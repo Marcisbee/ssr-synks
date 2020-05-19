@@ -1,4 +1,4 @@
-const createHTML = require('./create-html');
+const renderHTML = require('./render-html');
 const destroyTree = require('./destroy-tree');
 
 module.exports = async function mount(current, previous, update) {
@@ -20,7 +20,7 @@ module.exports = async function mount(current, previous, update) {
         return;
       }
 
-      const diff = await createHTML(node, previous);
+      const diff = await renderHTML(node, previous);
 
       if (update) {
         try {
