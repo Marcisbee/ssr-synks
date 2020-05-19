@@ -11,6 +11,7 @@
   },
   "scripts": {
     "start": "node src/index.js",
+    "dev": "npm start --prefix ./app",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
