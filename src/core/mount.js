@@ -20,7 +20,6 @@ module.exports = async function mount(current, previous, update) {
         return;
       }
 
-      // @TODO: Remove previous methods
       const diff = await createHTML(node, previous);
 
       if (update) {
@@ -33,9 +32,6 @@ module.exports = async function mount(current, previous, update) {
       }
     },
   };
-
-  // @TODO:
-  // context.root.updateId = 0;
 
   return root = {
     tree: await render(current, context),
