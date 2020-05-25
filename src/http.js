@@ -3,7 +3,7 @@ const url = require('url');
 const fs = require('fs');
 const path = require('path');
 const nodeCookie = require('node-cookie');
-const build = require('./build');
+const { build } = require('./build');
 const config = require('./config');
 
 function getCookie(cookie, name) {

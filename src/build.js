@@ -2,7 +2,7 @@ const Entry = require('./entry');
 const sessionController = require('./sessionController');
 const renderHTML = require('./core/render-html');
 
-module.exports = async function build(sessionId) {
+async function build(sessionId) {
   const session = sessionController.create(sessionId);
 
   if (session.html) {
@@ -18,3 +18,7 @@ module.exports = async function build(sessionId) {
 
   return app;
 }
+
+module.exports = {
+  build,
+};

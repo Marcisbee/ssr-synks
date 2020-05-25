@@ -1,6 +1,6 @@
 const WebSocket = require('ws');
 const nodeCookie = require('node-cookie');
-const build = require('./build');
+const { build } = require('./build');
 const config = require('./config');
 const sessionController = require('./sessionController');
 
