@@ -1,7 +1,8 @@
-const renderHTML = require('./render-html');
+const { renderHTML } = require('./render-html');
 const { destroyTree } = require('./destroy-tree');
+const { setActiveNode } = require('./active-node');
 
-module.exports = async function mount(current, previous, update) {
+async function mount(current, previous, update) {
   if (!(current instanceof Array)) {
     current = [current];
   }
@@ -76,12 +77,10 @@ async function renderComponent(current, context) {
     children: current.children,
   };
   // Component state update function
-  const update = async (newState) => {
+  const update = async (newState, index) => {
     if (current.destroyed) return;
     // Update state
-    current.state = newState instanceof Function
-      ? newState(current.state)
-      : newState;
+    current.state[index] = newState;
 
     // Render new tree with new state
     const rendered = await render(current, context);
@@ -95,8 +94,10 @@ async function renderComponent(current, context) {
     current.state = context.previous.state;
   }
 
+  setActiveNode(current, update);
+
   // Execute component function
-  const output = current.type(props, current.state, update);
+  const output = current.type(props);
 
   destroyTree(context.previous, context.methods);
 
@@ -162,7 +163,7 @@ async function render(current, context) {
 
   updateProps(current, context);
 
-  if (current.children.length > 0) {
+  if (current.children && current.children.length > 0) {
     await renderChildren(current, {
       ...context,
       index: 0,
@@ -170,4 +171,8 @@ async function render(current, context) {
   }
 
   return current;
+}
+
+module.exports = {
+  mount,
 }

@@ -1,10 +1,12 @@
+import { useState } from 'ssr-synks';
 import { atom, use } from './db';
 
 let p = 0;
 
 const countAtom = atom(0);
 
-function Counter(props, state, setState) {
+function Counter(props) {
+  const [state, setState] = useState(0);
   const [count, setCount] = use(countAtom, setState);
 
   return (
@@ -12,7 +14,9 @@ function Counter(props, state, setState) {
   );
 }
 
-function Login(props, isAuthorized, authorize) {
+function Login(props) {
+  const [isAuthorized, authorize] = useState(false);
+
   if (isAuthorized) {
     return (
       <div>
@@ -27,13 +31,14 @@ function Login(props, isAuthorized, authorize) {
   );
 }
 
-function Time(props, state = 0, update) {
-  setTimeout(update, 1000, state + 1)
-  return new Date().toLocaleTimeString();
+function Time(props) {
+  const [state, setState] = useState(0);
+  setTimeout(setState, 1000, state + 1);
+  return [new Date().toLocaleTimeString(), ' : ', state];
 }
 
-export default function Index(props, state = 0, setState) {
-  // setTimeout(setState, 1000, state + 1);
+export default function Index(props) {
+  const [state, setState] = useState(0);
 
   return (
     <div>

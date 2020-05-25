@@ -2,8 +2,8 @@ const { resolve } = require('path');
 const sessionController = require('./sessionController');
 
 const { h } = require('./core/h');
-const mount = require('./core/mount');
-const renderHTML = require('./core/render-html');
+const { mount } = require('./core/mount');
+const { renderHTML } = require('./core/render-html');
 const { pathCompress } = require('./core/path-compress');
 const { pathDecompress } = require('./core/path-decompress');
 

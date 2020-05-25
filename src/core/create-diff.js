@@ -1,4 +1,4 @@
-const renderHTML = require('./render-html');
+const { renderHTML } = require('./render-html');
 
 /**
  * @param {any} currentNode

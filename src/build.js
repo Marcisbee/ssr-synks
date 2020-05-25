@@ -1,6 +1,6 @@
 const { entry } = require('./entry');
 const sessionController = require('./sessionController');
-const renderHTML = require('./core/render-html');
+const { renderHTML } = require('./core/render-html');
 
 async function build(sessionId) {
   const session = sessionController.create(sessionId);

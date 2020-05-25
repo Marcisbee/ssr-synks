@@ -8,6 +8,7 @@ function h(type, props = null, ...children) {
     type,
     props,
     children,
+    state: {},
   };
 }
 
