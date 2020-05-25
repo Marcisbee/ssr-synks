@@ -94,7 +94,7 @@ async function renderComponent(current, context) {
     current.state = context.previous.state;
   }
 
-  setActiveNode(current, update);
+  setActiveNode(current, update, context);
 
   // Execute component function
   const output = current.type(props);
@@ -122,11 +122,10 @@ async function renderChildren(current, context) {
 }
 
 function updateProps(current, context) {
-  const currentProps = Object.entries(current.props || {});
-  const previousProps = Object.entries(context.props || {});
+  const props = Object.entries(current.props || {});
   const path = (current.path || []).join('.');
 
-  currentProps.forEach(([rawKey, value]) => {
+  props.forEach(([rawKey, value]) => {
     if (value instanceof Function) {
       const key = rawKey.replace(/^on/, '');
       if (typeof context.methods[path] === 'undefined') {

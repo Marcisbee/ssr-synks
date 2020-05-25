@@ -1,9 +1,11 @@
-import { useState } from 'ssr-synks';
+import { useState, useCookie, useSession } from 'ssr-synks';
 import { atom, use } from './db';
 
 let p = 0;
 
 const countAtom = atom(0);
+
+const DB = {};
 
 function Counter(props) {
   const [state, setState] = useState(0);
@@ -15,19 +17,28 @@ function Counter(props) {
 }
 
 function Login(props) {
-  const [isAuthorized, authorize] = useState(false);
+  const cookie = useCookie();
+  const [isAuthorized, setIsAuthorized] = useState(DB[cookie]);
+
+  function signOut() {
+    setIsAuthorized(DB[cookie] = false);
+  }
+
+  function signIn() {
+    setIsAuthorized(DB[cookie] = true);
+  }
 
   if (isAuthorized) {
     return (
       <div>
         <h1>Hello Mike!</h1>
-        <button onclick={() => authorize(false)}>Sign out</button>
+        <button onclick={signOut}>Sign out</button>
       </div>
     );
   }
 
   return (
-    <button onclick={() => { authorize(true) }}>Sign in</button>
+    <button onclick={signIn}>Sign in</button>
   );
 }
 
@@ -39,6 +50,8 @@ function Time(props) {
 
 export default function Index(props) {
   const [state, setState] = useState(0);
+  const session = useSession();
+  const cookie = useCookie();
 
   return (
     <div>
@@ -50,6 +63,11 @@ export default function Index(props) {
       <Counter p={p} s={state} />
       <Counter p={p + 1} s={state} />
       <button onclick={() => { setState(state + 1) }}>{p}</button>
+      <p>
+        session: {session}
+        <br />
+        cookie: {cookie}
+      </p>
     </div>
   );
 }

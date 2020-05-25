@@ -28,9 +28,13 @@ function connect(win, doc, helpers, name, port, session_name) {
       ]));
     };
 
+    const session = win[session_name];
+    const cookie = helpers.getCookie(doc.cookie, name);
+
     ws.send(JSON.stringify([
       'join',
-      helpers.getCookie(doc.cookie, name) || win[session_name]
+      session,
+      cookie,
     ]));
 
     // ws.send("My name is John");

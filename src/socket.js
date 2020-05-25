@@ -24,6 +24,7 @@ wss.on('connection', function connection(ws) {
     },
   };
 
+  let cookie;
   let sessionId;
   let session;
   let handler = (path, tree) => {
@@ -47,13 +48,10 @@ wss.on('connection', function connection(ws) {
 
     if (type === 'join' && data.length > 0) {
       if (session) return;
-      const [value] = data;
+      const [value, cookieValue] = data;
 
-      sessionId = nodeCookie.get({
-        headers: {
-          cookie: `${config.cookie.name}=${value}`
-        }
-      }, config.cookie.name, config.cookie.secret, true);
+      cookie = cookieValue;
+      sessionId = value;
 
       if (!sessionId) {
         console.log('Session is not valid');
@@ -63,7 +61,7 @@ wss.on('connection', function connection(ws) {
       session = sessionController.get(sessionId);
 
       if (!session) {
-        await build(sessionId);
+        await build(sessionId, cookie);
         session = sessionController.get(sessionId);
       }
 

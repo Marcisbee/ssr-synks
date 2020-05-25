@@ -16,13 +16,21 @@ function getCookie(cookie, name) {
   )[1];
 }
 
+const helpers = `{ getCookie: ${getCookie.toString()} }`;
+
 function createClientJs() {
   const clientJs = require('./client').connect.toString();
-  const helpers = `{ getCookie: ${getCookie.toString()} }`;
   const name = JSON.stringify(config.cookie.name);
   const port = config.socket.port;
 
-  return `(${clientJs})(window, document, ${helpers}, ${name}, ${port}, ${config.session.name})`;
+  return `(${clientJs})(
+    window,
+    document,
+    ${helpers},
+    ${name},
+    ${port},
+    ${JSON.stringify(config.session.name)}
+  )`;
 }
 
 function htmlStructure({ css, app, sessionId }) {
@@ -80,19 +88,17 @@ http.createServer(function (req, res) {
 
   fs.exists(pathname, async function (exist) {
     if ((!exist && ext === '') || pathname === path.join(__dirname, '../public/')) {
-      // @TODO: figure out sessions
-      // const cookie = nodeCookie.get(req, config.cookie.name, config.cookie.secret, true);
-      const cookie = null;
-      let sessionId = cookie;
-      let sessionIdRaw = getCookie(req.headers.cookie, config.cookie.name);
+      let cookie = nodeCookie.get(req, config.cookie.name);
+      const sessionIdRaw = String(Math.random());
+      const sessionId = nodeCookie.packValue(sessionIdRaw, config.cookie.secret, true);
 
       if (!cookie) {
-        sessionId = Math.random();
-        nodeCookie.create(res, config.cookie.name, sessionId, {}, config.cookie.secret, true);
+        const cookieRaw = String(Math.random());
+        cookie = nodeCookie.create(res, config.cookie.name, cookieRaw, {}, config.cookie.secret, true);
       }
 
-      const app = await build(sessionId);
-      const html = htmlStructure({ css: '', app: app.html, sessionId: sessionIdRaw });
+      const app = await build(sessionId, cookie);
+      const html = htmlStructure({ css: '', app: app.html, sessionId });
 
       res.setHeader('Content-type', 'text/html');
       res.end(html);

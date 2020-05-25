@@ -3,13 +3,20 @@ const { destroyTree } = require('./core/destroy-tree');
 const sessions = {};
 
 module.exports = {
-  create(id) {
-    return this.get(id) || (sessions[id] = {
+  create(id, cookie) {
+    const session = this.get(id);
+
+    if (session && session.cookie === cookie) {
+      return session;
+    }
+
+    return sessions[id] = {
       events: [],
       tree: {},
       message: null,
       html: null,
-    });
+      cookie,
+    };
   },
   async message(id, path, name, event) {
     const session = this.get(id);
@@ -36,7 +43,10 @@ module.exports = {
     return sessions[id];
   },
   remove(id) {
-    destroyTree(sessions[id].tree);
+    if (sessions[id]) {
+      destroyTree(sessions[id].tree);
+    }
+
     delete sessions[id];
   },
 }

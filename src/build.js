@@ -2,8 +2,8 @@ const { entry } = require('./entry');
 const sessionController = require('./sessionController');
 const { renderHTML } = require('./core/render-html');
 
-async function build(sessionId) {
-  const session = sessionController.create(sessionId);
+async function build(sessionId, cookie) {
+  const session = sessionController.create(sessionId, cookie);
 
   if (session.html) {
     session.html = await renderHTML(session.tree);
@@ -13,6 +13,7 @@ async function build(sessionId) {
   const app = await entry({
     props: {
       sessionId,
+      cookie,
     },
   });
 
