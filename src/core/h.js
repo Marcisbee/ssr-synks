@@ -1,4 +1,4 @@
-module.exports = function h(type, props = null, ...children) {
+function h(type, props = null, ...children) {
   if (props) {
     delete props.__self;
     delete props.__source;
@@ -10,3 +10,7 @@ module.exports = function h(type, props = null, ...children) {
     children,
   };
 }
+
+module.exports = {
+  h,
+};

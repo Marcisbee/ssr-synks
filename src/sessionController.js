@@ -1,4 +1,4 @@
-const destroyTree = require("./core/destroy-tree");
+const { destroyTree } = require('./core/destroy-tree');
 
 const sessions = {};
 

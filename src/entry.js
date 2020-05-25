@@ -1,11 +1,11 @@
-const { resolve } = require("path");
-const sessionController = require("./sessionController");
+const { resolve } = require('path');
+const sessionController = require('./sessionController');
 
-const h = require("./core/h");
-const mount = require("./core/mount");
-const renderHTML = require("./core/render-html");
-const pathCompress = require("./core/path-compress");
-const pathDecompress = require("./core/path-decompress");
+const { h } = require('./core/h');
+const mount = require('./core/mount');
+const renderHTML = require('./core/render-html');
+const { pathCompress } = require('./core/path-compress');
+const { pathDecompress } = require('./core/path-decompress');
 
 module.exports = async function Entry(props = {}, { renderHtml = false } = {}) {
   const indexPath = resolve('./index.tsx');

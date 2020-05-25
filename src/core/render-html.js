@@ -1,4 +1,4 @@
-const pathCompress = require("./path-compress");
+const { pathCompress } = require('./path-compress');
 
 module.exports = async function renderHTML(current, previous) {
   if (typeof current === 'undefined' || current === null || current === NaN) return '';

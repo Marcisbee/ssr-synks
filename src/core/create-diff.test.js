@@ -1,4 +1,4 @@
-const createDiff = require('./create-diff');
+const { createDiff } = require('./create-diff');
 
 test('returns "" with input null, undefined', async () => {
   const output = await createDiff(null, undefined);

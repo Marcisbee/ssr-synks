@@ -1,5 +1,5 @@
 const renderHTML = require('./render-html');
-const destroyTree = require('./destroy-tree');
+const { destroyTree } = require('./destroy-tree');
 
 module.exports = async function mount(current, previous, update) {
   if (!(current instanceof Array)) {
