@@ -7,7 +7,12 @@ const renderHTML = require('./core/render-html');
 const { pathCompress } = require('./core/path-compress');
 const { pathDecompress } = require('./core/path-decompress');
 
-module.exports = async function Entry(props = {}, { renderHtml = false } = {}) {
+/**
+ * @param {{ props?: Record<string, any> }} options
+ */
+async function entry({
+  props = {},
+} = {}) {
   const indexPath = resolve('./index.tsx');
   const Index = require(indexPath).default;
 
@@ -41,3 +46,7 @@ module.exports = async function Entry(props = {}, { renderHtml = false } = {}) {
     message,
   };
 }
+
+module.exports = {
+  entry,
+};

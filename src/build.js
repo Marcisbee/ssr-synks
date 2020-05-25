@@ -1,4 +1,4 @@
-const Entry = require('./entry');
+const { entry } = require('./entry');
 const sessionController = require('./sessionController');
 const renderHTML = require('./core/render-html');
 
@@ -10,7 +10,11 @@ async function build(sessionId) {
     return session;
   }
 
-  const app = await Entry({ sessionId });
+  const app = await entry({
+    props: {
+      sessionId,
+    },
+  });
 
   session.message = app.message;
   session.html = app.html;

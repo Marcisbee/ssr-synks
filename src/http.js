@@ -17,7 +17,7 @@ function getCookie(cookie, name) {
 }
 
 function createClientJs() {
-  const clientJs = require('./client').toString();
+  const clientJs = require('./client').connect.toString();
   const helpers = `{ getCookie: ${getCookie.toString()} }`;
   const name = JSON.stringify(config.cookie.name);
   const port = config.socket.port;
