@@ -10,6 +10,24 @@ function connect(win, doc, helpers, name, port, session_name) {
         };
       }
 
+      case 'submit': {
+        return {
+          values: Array.from(event.target).reduce(
+            (acc, field) => {
+              if (!field.name) {
+                return acc;
+              }
+
+              return {
+                ...acc,
+                [field.name]: field.value,
+              };
+            },
+            {}
+          ),
+        };
+      }
+
       default: {
         return null;
       }

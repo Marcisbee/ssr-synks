@@ -16,29 +16,55 @@ function Counter(props) {
   );
 }
 
+function validateUsername(username) {
+  if (!username) {
+    return 'Username cannot be empty!';
+  }
+
+  if (username === 'restricted') {
+    return `Username cannot be "${username}"!`;
+  }
+}
+
 function Login(props) {
   const cookie = useCookie();
-  const [isAuthorized, setIsAuthorized] = useState(DB[cookie]);
+  const [user, setUser] = useState(DB[cookie]);
+  const [error, setError] = useState(null);
 
   function signOut() {
-    setIsAuthorized(DB[cookie] = false);
+    setUser(DB[cookie] = null);
   }
 
-  function signIn() {
-    setIsAuthorized(DB[cookie] = true);
+  function signIn(event) {
+    const username = event.values.username;
+
+    const invalid = validateUsername(username);
+    if (invalid) {
+      setError(invalid);
+      return;
+    }
+
+    setError(null);
+    setUser(DB[cookie] = username);
   }
 
-  if (isAuthorized) {
+  if (user) {
     return (
       <div>
-        <h1>Hello Mike!</h1>
+        <h1>Hello {user}!</h1>
         <button onclick={signOut}>Sign out</button>
       </div>
     );
   }
 
   return (
-    <button onclick={signIn}>Sign in</button>
+    <form action="javascript:void(0);" onsubmit={signIn}>
+      <input type="text" name="username" />
+      <button type="submit">Sign in</button>
+      {error && (
+        <p>{error}</p>
+      )}
+    </form>
   );
 }
 
