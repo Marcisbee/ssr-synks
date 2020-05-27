@@ -1,4 +1,4 @@
-import { useState, useCookie, useSession } from 'ssr-synks';
+import SSR, { useState, useCookie, useSession } from 'ssr-synks';
 import { atom, use } from './db';
 
 let p = 0;
