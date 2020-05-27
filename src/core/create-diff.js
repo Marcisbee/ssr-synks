@@ -29,6 +29,29 @@ function diffProps(currentProps, previousProps) {
   }, {});
 }
 
+function flatNodes(nodes) {
+  return nodes
+    .flat(2)
+    .reduce((acc, node, index) => {
+      const previous = acc[index - 1];
+
+      if (typeof previous === 'undefined') {
+        return acc.concat(node);
+      }
+
+      if (typeof node === 'undefined' || node === null) {
+        return acc;
+      }
+
+      if (typeof node !== 'object') {
+        acc[index - 1] = `${previous}${node}`;
+        return acc;
+      }
+
+      return acc.concat(node);
+    }, []);
+}
+
 /**
  * @param {any} currentNode
  * @param {any} previousNode
@@ -43,8 +66,8 @@ export async function createDiff(currentNode, previousNode) {
   }
 
   if (currentNode instanceof Array) {
-    const flatCurrentNode = currentNode.flat(2);
-    const flatPreviousNode = [].concat(previousNode).flat(2);
+    const flatCurrentNode = flatNodes(currentNode);
+    const flatPreviousNode = flatNodes([].concat(previousNode));
     const length = Math.max(flatCurrentNode.length, flatPreviousNode.length || 0);
     const output = {};
 
@@ -67,7 +90,11 @@ export async function createDiff(currentNode, previousNode) {
     return createDiff(currentNode.instance, previousNode.instance);
   }
 
-  if (currentNode.type !== previousNode.type) {
+  if (currentNode.type !== previousNode.type && currentNode.type !== previousNode.instance.type) {
+    console.log({
+      currentNode,
+      previousNode,
+    });
     return renderHTML(currentNode);
   }
 

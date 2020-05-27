@@ -1,5 +1,5 @@
 import { render } from './render';
-import { renderHTML } from './render-html';
+import { createDiff } from './create-diff';
 
 export async function mount(current, previous, update) {
   if (!(current instanceof Array)) {
@@ -19,7 +19,7 @@ export async function mount(current, previous, update) {
         return;
       }
 
-      const diff = await renderHTML(node, previousNode);
+      const diff = await createDiff(node, previousNode);
 
       if (update) {
         try {

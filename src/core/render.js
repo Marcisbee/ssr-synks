@@ -54,6 +54,7 @@ async function renderComponent(current, context) {
     const rendered = await render(current, context);
 
     // Send update to browser
+    // @TODO: debug why previous sometimes is not instance
     context.update(rendered, context.previous);
   };
 

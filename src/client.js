@@ -42,6 +42,54 @@ export function connect(win, doc, helpers, name, port, sessionName) {
     }
   }
 
+  function patchDiff(node, target) {
+    // No difference
+    if (typeof node === 'undefined') {
+      return;
+    }
+
+    // Remove node
+    if (node === null) {
+      target.remove();
+      return;
+    }
+
+    // Replace node
+    if (typeof node !== 'object') {
+      // console.log(target, node);
+      if (target.nodeType === 3) {
+        target.textContent = node;
+        return;
+      }
+
+      target.innerHTML = node;
+      return;
+    }
+
+    // Update props
+    // Update children
+    if (node.children && node.props) {
+      patchDiff(node.children, target);
+      // @TODO: Patch props
+      return;
+    }
+
+    // Update childNodes
+    const currentLength = target.childNodes.length;
+    Object.keys(node).forEach((key) => {
+      const value = node[key];
+
+      if (currentLength <= key) {
+        target.insertAdjacentHTML('beforeend', value);
+        return;
+      }
+
+      const child = target.childNodes[key];
+
+      patchDiff(value, child);
+    });
+  }
+
   ws.onopen = () => {
     console.log('[open] Connection established');
 
@@ -76,7 +124,7 @@ export function connect(win, doc, helpers, name, port, sessionName) {
         const root = doc.querySelector(`[data-sx="${rawPath}"]`);
 
         if (root) {
-          root.outerHTML = diff;
+          patchDiff(diff, root);
           return;
         }
 
@@ -88,17 +136,11 @@ export function connect(win, doc, helpers, name, port, sessionName) {
 
         if (!(parent instanceof Node)) return;
 
-        const child = parent.childNodes[childPath];
-
-        if (!child) return;
-
-        // `child` is text or comment node
-        child.textContent = diff;
-
+        patchDiff(diff, parent);
         return;
       }
 
-      doc.body.innerHTML = diff;
+      patchDiff(diff, doc.body);
     }
 
     // Object.keys(update).forEach((key) => {
