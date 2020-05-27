@@ -1,3 +1,4 @@
+const { build } = require('esbuild');
 const { resolve } = require('path');
 const sessionController = require('./sessionController');
 
@@ -14,8 +15,18 @@ async function entry({
   props = {},
 } = {}) {
   const indexPath = resolve('./index.tsx');
+  await build({
+    stdio: 'inherit',
+    entryPoints: [indexPath],
+    outfile: './dist/main.js',
+    minify: false,
+    bundle: false,
+    jsxFactory: 'SSR.h',
+    platform: 'node',
+  }).catch(() => process.exit(1));
+
   // eslint-disable-next-line import/no-dynamic-require,global-require
-  const Index = require(indexPath).default;
+  const Index = require(resolve('./dist/main.js')).default;
 
   const session = sessionController.get(props.sessionId);
 

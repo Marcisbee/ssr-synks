@@ -1,6 +1,38 @@
+const { renderChildren } = require('./render-children');
 const updateProps = require('./update-props');
 const { destroyTree } = require('./destroy-tree');
 const { setActiveNode } = require('./active-node');
+
+function getNestedArrayLength(value) {
+  if (!(value instanceof Array)) {
+    return 1;
+  }
+
+  return value.reduce(
+    (sum, item) => sum + getNestedArrayLength(item),
+    0,
+  );
+}
+
+async function renderArray(current, context) {
+  const { previous, index } = context;
+  const output = [];
+  let length = index;
+
+  for (const i in current) {
+    const newContext = {
+      ...context,
+      previous: previous && previous[i],
+      index: length,
+    };
+    const result = await render(current[i], newContext);
+
+    length += getNestedArrayLength(result);
+    output.push(result);
+  }
+
+  return output;
+}
 
 async function render(current, context) {
   context = {
@@ -35,38 +67,6 @@ async function render(current, context) {
   }
 
   return current;
-}
-
-function getNestedArrayLength(value) {
-  if (!(value instanceof Array)) {
-    return 1;
-  }
-
-  return value.reduce(
-    (sum, item) => sum + getNestedArrayLength(item),
-    0,
-  );
-}
-
-async function renderArray(current, context) {
-  const { previous, index } = context;
-  const output = [];
-  let length = index;
-
-  // eslint-disable-next-line guard-for-in
-  for (const i in current) {
-    const newContext = {
-      ...context,
-      previous: previous && previous[i],
-      index: length,
-    };
-    const result = await render(current[i], newContext);
-
-    length += getNestedArrayLength(result);
-    output.push(result);
-  }
-
-  return output;
 }
 
 async function renderComponent(current, context) {
@@ -111,14 +111,7 @@ async function renderComponent(current, context) {
   return current;
 }
 
-async function renderChildren(current, context) {
-  const newContext = {
-    ...context,
-    previous: (context.previous && context.previous.children) || [],
-  };
-  current.children = await renderArray(current.children, newContext);
-}
-
 module.exports = {
   render,
+  renderArray,
 };

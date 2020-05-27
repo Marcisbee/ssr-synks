@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "",
   "main": "src/core/index.js",
+  "module": "src/core/index.js",
   "engines": {
     "node": ">=12.x"
   },
@@ -26,8 +27,8 @@
   },
   "homepage": "https://github.com/Marcisbee/ssr-synks#readme",
   "dependencies": {
+    "esbuild": "^0.4.2",
     "node-cookie": "^2.1.2",
-    "sucrase": "^3.14.0",
     "ws": "^7.3.0"
   },
   "devDependencies": {
