@@ -18,7 +18,7 @@ async function entry({
 
   const session = sessionController.get(props.sessionId);
 
-  function update(rawPath, component, diff, root, context) {
+  function update(rawPath, component, diff) {
     const path = pathCompress(rawPath.join('.'));
     sessionController.update(props.sessionId, path, diff);
   }

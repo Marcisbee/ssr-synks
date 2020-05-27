@@ -19,11 +19,6 @@ async function createDiff(currentNode, previousNode) {
 
     for (let index = 0; index < length; index++) {
       output[index] = await createDiff(currentNode[index], previousNode[index]);
-      // const value = await createDiff(currentNode[index], previousNode[index]);
-
-      // if (typeof value === 'undefined') continue;
-
-      // output[index] = value;
     }
 
     return output;
@@ -46,8 +41,9 @@ async function createDiff(currentNode, previousNode) {
   }
 
   // @TODO: Handle this more nicely
-  if (JSON.stringify(currentNode.children) === JSON.stringify(previousNode.children)
-    && JSON.stringify(currentNode.props) === JSON.stringify(previousNode.props)) {
+  const childrenEqual = JSON.stringify(currentNode.children) === JSON.stringify(previousNode.children);
+  const propsEqual = JSON.stringify(currentNode.props) === JSON.stringify(previousNode.props);
+  if (childrenEqual && propsEqual) {
     return;
   }
 

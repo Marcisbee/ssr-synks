@@ -8,7 +8,6 @@ async function mount(current, previous, update) {
   }
 
   let closed = false;
-  let root;
   const methods = {};
   const context = {
     path: [],
@@ -25,7 +24,7 @@ async function mount(current, previous, update) {
 
       if (update) {
         try {
-          update(node.path, node.type, diff, root, context);
+          update(node.path, node.type, diff);
         } catch (e) {
           // Session is cleared or other error happened
           closed = true;
@@ -34,7 +33,7 @@ async function mount(current, previous, update) {
     },
   };
 
-  return root = {
+  return context.root = {
     tree: await render(current, context),
     methods,
   };
@@ -124,15 +123,16 @@ async function renderChildren(current, context) {
 function updateProps(current, context) {
   const props = Object.entries(current.props || {});
   const path = (current.path || []).join('.');
+  const { methods } = context;
 
   props.forEach(([rawKey, value]) => {
     if (value instanceof Function) {
       const key = rawKey.replace(/^on/, '');
-      if (typeof context.methods[path] === 'undefined') {
-        context.methods[path] = {};
+      if (typeof methods[path] === 'undefined') {
+        methods[path] = {};
       }
 
-      context.methods[path][key] = value;
+      methods[path][key] = value;
     }
   });
 }
