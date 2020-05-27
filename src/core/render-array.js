@@ -1,4 +1,4 @@
-const { render } = require('./render');
+import { render } from './render';
 
 function getNestedArrayLength(value) {
   if (!(value instanceof Array)) {
@@ -11,7 +11,7 @@ function getNestedArrayLength(value) {
   );
 }
 
-module.exports = async function renderArray(current, context) {
+export async function renderArray(current, context) {
   const { previous, index } = context;
   const output = [];
   let length = index;
@@ -29,4 +29,4 @@ module.exports = async function renderArray(current, context) {
   }
 
   return output;
-};
+}

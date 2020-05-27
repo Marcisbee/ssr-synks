@@ -1,7 +1,3 @@
-function pathDecompress(path) {
+export function pathDecompress(path) {
   return Buffer.from(path, 'base64').toString();
 }
-
-module.exports = {
-  pathDecompress,
-};

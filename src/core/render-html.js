@@ -1,6 +1,6 @@
-const { pathCompress } = require('./path-compress');
+import { pathCompress } from './path-compress';
 
-async function renderHTML(current, previous) {
+export async function renderHTML(current, previous) {
   if (typeof current === 'undefined' || current === null) return '';
   if (typeof current !== 'object') return String(current);
   if (current instanceof Array) {
@@ -39,7 +39,3 @@ async function renderHTML(current, previous) {
 
   return `<${type} ${attributes}>${childNodes}</${type}>`;
 }
-
-module.exports = {
-  renderHTML,
-};

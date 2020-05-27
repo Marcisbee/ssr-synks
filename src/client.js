@@ -1,4 +1,4 @@
-function connect(win, doc, helpers, name, port, sessionName) {
+export function connect(win, doc, helpers, name, port, sessionName) {
   const ws = new WebSocket(`ws://localhost:${port}`);
   function syntheticEvent(event) {
     switch (event.type) {
@@ -119,7 +119,3 @@ function connect(win, doc, helpers, name, port, sessionName) {
     // connection.innerHTML = `error: ${error.message}`;
   };
 }
-
-module.exports = {
-  connect,
-};

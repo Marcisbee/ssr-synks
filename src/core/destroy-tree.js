@@ -1,4 +1,4 @@
-function destroyTree(tree, methods) {
+export function destroyTree(tree, methods) {
   if (tree instanceof Array) {
     tree.forEach((node) => destroyTree(node, methods));
     return;
@@ -24,7 +24,3 @@ function destroyTree(tree, methods) {
 
   destroyTree(tree.children);
 }
-
-module.exports = {
-  destroyTree,
-};

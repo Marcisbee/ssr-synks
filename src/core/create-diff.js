@@ -1,10 +1,10 @@
-const { renderHTML } = require('./render-html');
+import { renderHTML } from './render-html';
 
 /**
  * @param {any} currentNode
  * @param {any} previousNode
  */
-async function createDiff(currentNode, previousNode) {
+export async function createDiff(currentNode, previousNode) {
   if (currentNode === previousNode) {
     return undefined;
   }
@@ -54,7 +54,3 @@ async function createDiff(currentNode, previousNode) {
     children: await createDiff(currentNode.children, previousNode.children),
   };
 }
-
-module.exports = {
-  createDiff,
-};

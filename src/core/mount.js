@@ -1,7 +1,7 @@
-const { render } = require('./render');
-const { renderHTML } = require('./render-html');
+import { render } from './render';
+import { renderHTML } from './render-html';
 
-async function mount(current, previous, update) {
+export async function mount(current, previous, update) {
   if (!(current instanceof Array)) {
     current = [current];
   }
@@ -37,7 +37,3 @@ async function mount(current, previous, update) {
     methods,
   };
 }
-
-module.exports = {
-  mount,
-};

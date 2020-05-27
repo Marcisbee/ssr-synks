@@ -1,32 +1,19 @@
-const { build } = require('esbuild');
-const { resolve } = require('path');
-const sessionController = require('./sessionController');
+import { resolve } from 'path';
+import * as sessionController from './sessionController';
 
-const { h } = require('./core/h');
-const { mount } = require('./core/mount');
-const { renderHTML } = require('./core/render-html');
-const { pathCompress } = require('./core/path-compress');
-const { pathDecompress } = require('./core/path-decompress');
+import { h } from './core/h';
+import { mount } from './core/mount';
+import { renderHTML } from './core/render-html';
+import { pathCompress } from './core/path-compress';
+import { pathDecompress } from './core/path-decompress';
 
 /**
  * @param {{ props?: Record<string, any> }} options
  */
-async function entry({
+export async function entry({
   props = {},
 } = {}) {
-  const indexPath = resolve('./index.tsx');
-  await build({
-    stdio: 'inherit',
-    entryPoints: [indexPath],
-    outfile: './dist/main.js',
-    minify: false,
-    bundle: false,
-    jsxFactory: 'SSR.h',
-    platform: 'node',
-  }).catch(() => process.exit(1));
-
-  // eslint-disable-next-line import/no-dynamic-require,global-require
-  const Index = require(resolve('./dist/main.js')).default;
+  const Index = (await import(resolve('./dist/main.js'))).default;
 
   const session = sessionController.get(props.sessionId);
 
@@ -61,7 +48,3 @@ async function entry({
     message,
   };
 }
-
-module.exports = {
-  entry,
-};

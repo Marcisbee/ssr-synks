@@ -1,9 +1,9 @@
-const { h } = require('./h');
-const { useState } = require('./use-state');
-const { useSession } = require('./use-session');
-const { useCookie } = require('./use-cookie');
+import { h } from './h';
+import { useState } from './use-state';
+import { useSession } from './use-session';
+import { useCookie } from './use-cookie';
 
-module.exports = {
+export default {
   h,
   useState,
   useSession,

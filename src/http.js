@@ -1,11 +1,19 @@
-const http = require('http');
-const url = require('url');
-const fs = require('fs');
-const path = require('path');
-const nodeCookie = require('node-cookie');
-const { build } = require('./build');
-const config = require('./config');
-const client = require('./client');
+import { createServer } from 'http';
+import { parse, fileURLToPath } from 'url';
+import { exists, statSync, readFile } from 'fs';
+import { join, parse as _parse, dirname } from 'path';
+import nodeCookie from 'node-cookie';
+import { build } from './build';
+import {
+  cookie as _cookie,
+  socket,
+  session,
+  http as _http,
+} from './config';
+import { connect } from './client';
+
+// @ts-ignore
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 function getCookie(cookie, name) {
   if (!cookie) return null;
@@ -20,9 +28,9 @@ function getCookie(cookie, name) {
 const helpers = `{ getCookie: ${getCookie.toString()} }`;
 
 function createClientJs() {
-  const clientJs = client.connect.toString();
-  const name = JSON.stringify(config.cookie.name);
-  const { port } = config.socket;
+  const clientJs = connect.toString();
+  const name = JSON.stringify(_cookie.name);
+  const { port } = socket;
 
   return `(${clientJs})(
     window,
@@ -30,7 +38,7 @@ function createClientJs() {
     ${helpers},
     ${name},
     ${port},
-    ${JSON.stringify(config.session.name)}
+    ${JSON.stringify(session.name)}
   )`;
 }
 
@@ -43,7 +51,7 @@ function htmlStructure({ css, app, sessionId }) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <script>
-    window.${config.session.name} = ${JSON.stringify(sessionId)};
+    window.${session.name} = ${JSON.stringify(sessionId)};
   </script>
   ${css || ''}
 </head>
@@ -56,15 +64,15 @@ function htmlStructure({ css, app, sessionId }) {
 </html>`;
 }
 
-http.createServer((req, res) => {
+const server = createServer((req, res) => {
   console.log(`${req.method} ${req.url}`);
 
   // parse URL
-  const parsedUrl = url.parse(req.url);
+  const parsedUrl = parse(req.url);
   // extract URL path
-  let pathname = path.join(__dirname, `../public/${parsedUrl.pathname}`);
+  let pathname = join(__dirname, `../public/${parsedUrl.pathname}`);
   // based on the URL path, extract the file extension. e.g. .js, .doc, ...
-  const { ext } = path.parse(pathname);
+  const { ext } = _parse(pathname);
   // maps file extension to MIME type
   const map = {
     '.ico': 'image/x-icon',
@@ -87,16 +95,16 @@ http.createServer((req, res) => {
     return;
   }
 
-  fs.exists(pathname, async (exist) => {
-    if ((!exist && ext === '') || pathname === path.join(__dirname, '../public/')) {
-      let cookie = nodeCookie.get(req, config.cookie.name);
+  exists(pathname, async (exist) => {
+    if ((!exist && ext === '') || pathname === join(__dirname, '../public/')) {
+      let cookie = nodeCookie.get(req, _cookie.name);
       const sessionIdRaw = String(Math.random());
-      const sessionId = nodeCookie.packValue(sessionIdRaw, config.cookie.secret, true);
+      const sessionId = nodeCookie.packValue(sessionIdRaw, _cookie.secret, true);
 
       if (!cookie) {
         const cookieRaw = String(Math.random());
         cookie = nodeCookie.create(
-          res, config.cookie.name, cookieRaw, {}, config.cookie.secret, true,
+          res, _cookie.name, cookieRaw, {}, _cookie.secret, true,
         );
       }
 
@@ -115,12 +123,12 @@ http.createServer((req, res) => {
     }
 
     // if is a directory search for index file matching the extension
-    if (fs.statSync(pathname).isDirectory()) {
+    if (statSync(pathname).isDirectory()) {
       pathname += `/index${ext}`;
     }
 
     // read file from file system
-    fs.readFile(pathname, (err, data) => {
+    readFile(pathname, (err, data) => {
       if (err) {
         res.statusCode = 500;
         res.setHeader('Content-type', 'text/plain');
@@ -132,6 +140,9 @@ http.createServer((req, res) => {
       }
     });
   });
-}).listen(config.http.port);
+});
 
-console.log(`Server listening on port ${config.http.port}`);
+export default () => {
+  server.listen(_http.port);
+  console.log(`Server listening on port ${_http.port}`);
+}

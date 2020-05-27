@@ -1,40 +1,10 @@
-const { renderChildren } = require('./render-children');
-const updateProps = require('./update-props');
-const { destroyTree } = require('./destroy-tree');
-const { setActiveNode } = require('./active-node');
+import { renderChildren } from './render-children';
+import { updateProps } from './update-props';
+import { destroyTree } from './destroy-tree';
+import { setActiveNode } from './active-node';
+import { renderArray } from './render-array';
 
-function getNestedArrayLength(value) {
-  if (!(value instanceof Array)) {
-    return 1;
-  }
-
-  return value.reduce(
-    (sum, item) => sum + getNestedArrayLength(item),
-    0,
-  );
-}
-
-async function renderArray(current, context) {
-  const { previous, index } = context;
-  const output = [];
-  let length = index;
-
-  for (const i in current) {
-    const newContext = {
-      ...context,
-      previous: previous && previous[i],
-      index: length,
-    };
-    const result = await render(current[i], newContext);
-
-    length += getNestedArrayLength(result);
-    output.push(result);
-  }
-
-  return output;
-}
-
-async function render(current, context) {
+export async function render(current, context) {
   context = {
     ...context,
     path: context.path.slice(),
@@ -110,8 +80,3 @@ async function renderComponent(current, context) {
 
   return current;
 }
-
-module.exports = {
-  render,
-  renderArray,
-};

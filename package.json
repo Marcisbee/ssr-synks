@@ -2,6 +2,7 @@
   "name": "ssr-synks",
   "version": "0.1.0",
   "description": "",
+  "type": "module",
   "main": "src/core/index.js",
   "module": "src/core/index.js",
   "engines": {
@@ -41,7 +42,7 @@
   "eslintConfig": {
     "env": {
       "browser": true,
-      "commonjs": true,
+      "module": true,
       "es6": true
     },
     "extends": [

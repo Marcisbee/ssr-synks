@@ -1,3 +1,3 @@
-#! /usr/bin/env node --experimental-modules --input-type=module
+#! /usr/bin/env node --experimental-modules --es-module-specifier-resolution=node
 
-require('../src/index.js');
+import '../src';

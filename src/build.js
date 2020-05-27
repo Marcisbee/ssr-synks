@@ -1,9 +1,9 @@
-const { entry } = require('./entry');
-const sessionController = require('./sessionController');
-const { renderHTML } = require('./core/render-html');
+import { entry } from './entry';
+import { create } from './sessionController';
+import { renderHTML } from './core/render-html';
 
-async function build(sessionId, cookie) {
-  const session = sessionController.create(sessionId, cookie);
+export async function build(sessionId, cookie) {
+  const session = create(sessionId, cookie);
 
   if (session.html) {
     session.html = await renderHTML(session.tree);
@@ -23,7 +23,3 @@ async function build(sessionId, cookie) {
 
   return app;
 }
-
-module.exports = {
-  build,
-};

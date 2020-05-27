@@ -1,6 +1,6 @@
-const { getActiveNode } = require('./active-node');
+import { getActiveNode } from './active-node';
 
-function useState(initialState) {
+export function useState(initialState) {
   const {
     node,
     index,
@@ -28,7 +28,3 @@ function useState(initialState) {
     setState,
   ];
 }
-
-module.exports = {
-  useState,
-};

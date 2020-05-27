@@ -1,4 +1,4 @@
-module.exports = function updateProps(current, context) {
+export function updateProps(current, context) {
   const props = Object.entries(current.props || {});
   const path = (current.path || []).join('.');
   const { methods } = context;

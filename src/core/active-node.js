@@ -5,7 +5,7 @@ let activeNode = {
   index: null,
 };
 
-function setActiveNode(node, update, context) {
+export function setActiveNode(node, update, context) {
   return activeNode = {
     node,
     update,
@@ -14,7 +14,7 @@ function setActiveNode(node, update, context) {
   };
 }
 
-function getActiveNode() {
+export function getActiveNode() {
   const node = {
     ...activeNode,
   };
@@ -23,8 +23,3 @@ function getActiveNode() {
 
   return node;
 }
-
-module.exports = {
-  setActiveNode,
-  getActiveNode,
-};

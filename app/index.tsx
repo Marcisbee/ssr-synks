@@ -1,4 +1,4 @@
-import SSR, { useState, useCookie, useSession } from 'ssr-synks';
+import SSR from 'ssr-synks';
 import { atom, use } from './db';
 
 let p = 0;
@@ -8,7 +8,7 @@ const countAtom = atom(0);
 const DB = {};
 
 function Counter(props) {
-  const [state, setState] = useState(0);
+  const [state, setState] = SSR.useState(0);
   const [count, setCount] = use(countAtom, setState);
 
   return (
@@ -27,9 +27,9 @@ function validateUsername(username) {
 }
 
 function Login(props) {
-  const cookie = useCookie();
-  const [user, setUser] = useState(DB[cookie]);
-  const [error, setError] = useState(null);
+  const cookie = SSR.useCookie();
+  const [user, setUser] = SSR.useState(DB[cookie]);
+  const [error, setError] = SSR.useState(null);
 
   function signOut() {
     setUser(DB[cookie] = null);
@@ -69,15 +69,15 @@ function Login(props) {
 }
 
 function Time(props) {
-  const [state, setState] = useState(0);
+  const [state, setState] = SSR.useState(0);
   setTimeout(setState, 1000, state + 1);
   return [new Date().toLocaleTimeString(), ' : ', state];
 }
 
 export default function Index(props) {
-  const [state, setState] = useState(0);
-  const session = useSession();
-  const cookie = useCookie();
+  const [state, setState] = SSR.useState(0);
+  const session = SSR.useSession();
+  const cookie = SSR.useCookie();
 
   return (
     <div>

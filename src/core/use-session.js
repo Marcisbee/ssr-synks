@@ -1,11 +1,7 @@
-const { getActiveNode } = require('./active-node');
+import { getActiveNode } from './active-node';
 
-function useSession() {
+export function useSession() {
   const { context } = getActiveNode();
 
   return context.root[0].props.sessionId;
 }
-
-module.exports = {
-  useSession,
-};
