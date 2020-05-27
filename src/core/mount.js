@@ -55,18 +55,17 @@ async function renderArray(current, context) {
   const output = [];
   let length = index;
 
+  // eslint-disable-next-line guard-for-in
   for (const i in current) {
-    if (Object.prototype.hasOwnProperty.call(i, current)) {
-      const newContext = {
-        ...context,
-        previous: previous && previous[i],
-        index: length,
-      };
-      const result = await render(current[i], newContext);
+    const newContext = {
+      ...context,
+      previous: previous && previous[i],
+      index: length,
+    };
+    const result = await render(current[i], newContext);
 
-      length += getNestedArrayLength(result);
-      output.push(result);
-    }
+    length += getNestedArrayLength(result);
+    output.push(result);
   }
 
   return output;

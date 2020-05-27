@@ -6,10 +6,9 @@ async function renderHTML(current, previous) {
   if (current instanceof Array) {
     const nodes = [];
 
+    // eslint-disable-next-line guard-for-in
     for (const i in current) {
-      if (Object.prototype.hasOwnProperty.call(i, current)) {
-        nodes.push(await renderHTML(current[i], previous && previous[i]));
-      }
+      nodes.push(await renderHTML(current[i], previous && previous[i]));
     }
 
     return nodes.join('');
