@@ -6,25 +6,25 @@ const { renderHTML } = require('./render-html');
  */
 async function createDiff(currentNode, previousNode) {
   if (currentNode === previousNode) {
-    return;
+    return undefined;
   }
 
-  if (typeof previousNode === 'undefined' || previousNode === null || previousNode === NaN) {
-    return await renderHTML(currentNode);
+  if (typeof previousNode === 'undefined' || previousNode === null) {
+    return renderHTML(currentNode);
   }
 
   if (currentNode instanceof Array) {
     const length = Math.max(currentNode.length, previousNode.length || 0);
     const output = {};
 
-    for (let index = 0; index < length; index++) {
+    for (let index = 0; index < length; index += 1) {
       output[index] = await createDiff(currentNode[index], previousNode[index]);
     }
 
     return output;
   }
 
-  if (typeof currentNode === 'undefined' || currentNode === null || currentNode === NaN) {
+  if (typeof currentNode === 'undefined' || currentNode === null) {
     return null;
   }
 
@@ -33,18 +33,20 @@ async function createDiff(currentNode, previousNode) {
   }
 
   if (typeof currentNode.instance !== 'undefined') {
-    return await createDiff(currentNode.instance, previousNode.instance);
+    return createDiff(currentNode.instance, previousNode.instance);
   }
 
   if (currentNode.type !== previousNode.type) {
-    return await renderHTML(currentNode);
+    return renderHTML(currentNode);
   }
 
   // @TODO: Handle this more nicely
-  const childrenEqual = JSON.stringify(currentNode.children) === JSON.stringify(previousNode.children);
-  const propsEqual = JSON.stringify(currentNode.props) === JSON.stringify(previousNode.props);
+  const childrenEqual = JSON.stringify(currentNode.children)
+    === JSON.stringify(previousNode.children);
+  const propsEqual = JSON.stringify(currentNode.props)
+    === JSON.stringify(previousNode.props);
   if (childrenEqual && propsEqual) {
-    return;
+    return undefined;
   }
 
   return {

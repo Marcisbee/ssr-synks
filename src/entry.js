@@ -14,6 +14,7 @@ async function entry({
   props = {},
 } = {}) {
   const indexPath = resolve('./index.tsx');
+  // eslint-disable-next-line import/no-dynamic-require,global-require
   const Index = require(indexPath).default;
 
   const session = sessionController.get(props.sessionId);
@@ -32,10 +33,13 @@ async function entry({
   async function message(rawPath, name, event) {
     const path = pathDecompress(rawPath);
     const methodsInPath = methods[path];
+
     if (methodsInPath && methodsInPath[name]) {
-      return await methodsInPath[name](event);
+      return methodsInPath[name](event);
     }
-  };
+
+    return undefined;
+  }
 
   const html = await renderHTML(tree);
 

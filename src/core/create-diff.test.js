@@ -15,10 +15,10 @@ test('returns undefined with same input 1, 1', async () => {
 test('returns fully replaced html node', async () => {
   const output = await createDiff(
     { type: 'div', props: {}, path: [1] },
-    { type: 'span', props: {}, path: [1] }
+    { type: 'span', props: {}, path: [1] },
   );
 
-  expect(output).toEqual('<div data-sx=\"MQ==\"></div>');
+  expect(output).toEqual('<div data-sx="MQ=="></div>');
 });
 
 test('returns diff for equal node', async () => {
@@ -29,27 +29,27 @@ test('returns diff for equal node', async () => {
       children: [
         'Hello world',
         {
-          type: 'p'
+          type: 'p',
         },
-        1
+        1,
       ],
-      path: [1]
+      path: [1],
     },
     {
       type: 'div',
       props: {},
       children: [
         {
-          type: 'span'
+          type: 'span',
         },
         {
-          type: 'p'
+          type: 'p',
         },
         1,
-        "0"
+        '0',
       ],
-      path: [1]
-    }
+      path: [1],
+    },
   );
 
   expect(output).toEqual({
@@ -59,6 +59,6 @@ test('returns diff for equal node', async () => {
       2: undefined,
       3: null,
     },
-    props: 'DIFF'
+    props: 'DIFF',
   });
 });

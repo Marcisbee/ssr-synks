@@ -1,4 +1,4 @@
-function connect(win, doc, helpers, name, port, session_name) {
+function connect(win, doc, helpers, name, port, sessionName) {
   const ws = new WebSocket(`ws://localhost:${port}`);
   function syntheticEvent(event) {
     switch (event.type) {
@@ -23,7 +23,7 @@ function connect(win, doc, helpers, name, port, session_name) {
                 [field.name]: field.value,
               };
             },
-            {}
+            {},
           ),
         };
       }
@@ -34,19 +34,19 @@ function connect(win, doc, helpers, name, port, session_name) {
     }
   }
 
-  ws.onopen = function (e) {
-    console.log("[open] Connection established");
+  ws.onopen = () => {
+    console.log('[open] Connection established');
 
     win.__sx = (e) => {
       ws.send(JSON.stringify([
         'event',
         e.target.getAttribute('data-sx'),
-        event.type,
-        syntheticEvent(event),
+        e.type,
+        syntheticEvent(e),
       ]));
     };
 
-    const session = win[session_name];
+    const session = win[sessionName];
     const cookie = helpers.getCookie(doc.cookie, name);
 
     ws.send(JSON.stringify([
@@ -58,7 +58,7 @@ function connect(win, doc, helpers, name, port, session_name) {
     // ws.send("My name is John");
   };
 
-  ws.onmessage = function (event) {
+  ws.onmessage = (event) => {
     const [type, ...data] = JSON.parse(event.data);
 
     if (type === 'update') {
@@ -101,7 +101,7 @@ function connect(win, doc, helpers, name, port, session_name) {
     // console.log(`[message] Data received from server: ${event.data}`);
   };
 
-  ws.onclose = function (event) {
+  ws.onclose = (event) => {
     // connection.innerHTML = 'close';
     if (event.wasClean) {
       console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
@@ -114,7 +114,7 @@ function connect(win, doc, helpers, name, port, session_name) {
     }
   };
 
-  ws.onerror = function (error) {
+  ws.onerror = () => {
     ws.close();
     // connection.innerHTML = `error: ${error.message}`;
   };

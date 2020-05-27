@@ -15,12 +15,12 @@ async function mount(current, previous, update) {
     previous: previous || [],
     root: current,
     methods,
-    async update(node, previous) {
+    async update(node, previousNode) {
       if (closed) {
         return;
       }
 
-      const diff = await renderHTML(node, previous);
+      const diff = await renderHTML(node, previousNode);
 
       if (update) {
         try {
@@ -33,7 +33,7 @@ async function mount(current, previous, update) {
     },
   };
 
-  return context.root = {
+  return {
     tree: await render(current, context),
     methods,
   };
@@ -46,25 +46,27 @@ function getNestedArrayLength(value) {
 
   return value.reduce(
     (sum, item) => sum + getNestedArrayLength(item),
-    0
+    0,
   );
-};
+}
 
 async function renderArray(current, context) {
-  let length = context.index;
-  const output = [];
   const { previous, index } = context;
+  const output = [];
+  let length = index;
 
   for (const i in current) {
-    const newContext = {
-      ...context,
-      previous: previous && previous[i],
-      index: length,
-    };
-    const result = await render(current[i], newContext);
+    if (Object.prototype.hasOwnProperty.call(i, current)) {
+      const newContext = {
+        ...context,
+        previous: previous && previous[i],
+        index: length,
+      };
+      const result = await render(current[i], newContext);
 
-    length += getNestedArrayLength(result);
-    output.push(result);
+      length += getNestedArrayLength(result);
+      output.push(result);
+    }
   }
 
   return output;
@@ -145,7 +147,7 @@ async function render(current, context) {
 
   if (current instanceof Array) {
     context.previous = context.previous || [];
-    return await renderArray(current, context);
+    return renderArray(current, context);
   }
 
   if (current === undefined || current === null || typeof current !== 'object') {
@@ -154,7 +156,7 @@ async function render(current, context) {
 
   if (current.type instanceof Function) {
     current.path = context.path.concat(context.index);
-    return await renderComponent(current, context);
+    return renderComponent(current, context);
   }
 
   context.path.push(context.index);
@@ -174,4 +176,4 @@ async function render(current, context) {
 
 module.exports = {
   mount,
-}
+};

@@ -5,13 +5,14 @@ const path = require('path');
 const nodeCookie = require('node-cookie');
 const { build } = require('./build');
 const config = require('./config');
+const client = require('./client');
 
 function getCookie(cookie, name) {
-  if (!cookie) return;
+  if (!cookie) return null;
 
   return (
     cookie.match(
-      new RegExp(`${name}=([^; |$]+)`)
+      new RegExp(`${name}=([^; |$]+)`),
     ) || []
   )[1];
 }
@@ -19,9 +20,9 @@ function getCookie(cookie, name) {
 const helpers = `{ getCookie: ${getCookie.toString()} }`;
 
 function createClientJs() {
-  const clientJs = require('./client').connect.toString();
+  const clientJs = client.connect.toString();
   const name = JSON.stringify(config.cookie.name);
-  const port = config.socket.port;
+  const { port } = config.socket;
 
   return `(${clientJs})(
     window,
@@ -55,7 +56,7 @@ function htmlStructure({ css, app, sessionId }) {
 </html>`;
 }
 
-http.createServer(function (req, res) {
+http.createServer((req, res) => {
   console.log(`${req.method} ${req.url}`);
 
   // parse URL
@@ -63,7 +64,7 @@ http.createServer(function (req, res) {
   // extract URL path
   let pathname = path.join(__dirname, `../public/${parsedUrl.pathname}`);
   // based on the URL path, extract the file extension. e.g. .js, .doc, ...
-  const ext = path.parse(pathname).ext;
+  const { ext } = path.parse(pathname);
   // maps file extension to MIME type
   const map = {
     '.ico': 'image/x-icon',
@@ -77,7 +78,7 @@ http.createServer(function (req, res) {
     '.mp3': 'audio/mpeg',
     '.svg': 'image/svg+xml',
     '.pdf': 'application/pdf',
-    '.doc': 'application/msword'
+    '.doc': 'application/msword',
   };
 
   if (parsedUrl.pathname === '/client.js') {
@@ -86,7 +87,7 @@ http.createServer(function (req, res) {
     return;
   }
 
-  fs.exists(pathname, async function (exist) {
+  fs.exists(pathname, async (exist) => {
     if ((!exist && ext === '') || pathname === path.join(__dirname, '../public/')) {
       let cookie = nodeCookie.get(req, config.cookie.name);
       const sessionIdRaw = String(Math.random());
@@ -94,7 +95,9 @@ http.createServer(function (req, res) {
 
       if (!cookie) {
         const cookieRaw = String(Math.random());
-        cookie = nodeCookie.create(res, config.cookie.name, cookieRaw, {}, config.cookie.secret, true);
+        cookie = nodeCookie.create(
+          res, config.cookie.name, cookieRaw, {}, config.cookie.secret, true,
+        );
       }
 
       const app = await build(sessionId, cookie);
@@ -107,15 +110,17 @@ http.createServer(function (req, res) {
 
     if (!exist) {
       res.statusCode = 404;
-      res.end(`File not found`);
+      res.end('File not found');
       return;
     }
 
     // if is a directory search for index file matching the extension
-    if (fs.statSync(pathname).isDirectory()) pathname += '/index' + ext;
+    if (fs.statSync(pathname).isDirectory()) {
+      pathname += `/index${ext}`;
+    }
 
     // read file from file system
-    fs.readFile(pathname, function (err, data) {
+    fs.readFile(pathname, (err, data) => {
       if (err) {
         res.statusCode = 500;
         res.setHeader('Content-type', 'text/plain');

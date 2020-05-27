@@ -12,7 +12,8 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "npm start --prefix ./app",
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint"
   },
   "repository": {
     "type": "git",
@@ -31,6 +32,43 @@
   },
   "devDependencies": {
     "@types/jest": "^25.2.3",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-plugin-import": "^2.20.2",
     "jest": "^26.0.1"
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "commonjs": true,
+      "es6": true
+    },
+    "extends": [
+      "airbnb-base"
+    ],
+    "globals": {
+      "Atomics": "readonly",
+      "SharedArrayBuffer": "readonly"
+    },
+    "parserOptions": {
+      "ecmaVersion": 11
+    },
+    "overrides": [
+      {
+        "files": [
+          "**/*.test.js"
+        ],
+        "env": {
+          "jest": true
+        }
+      }
+    ],
+    "rules": {
+      "no-underscore-dangle": "off",
+      "no-restricted-syntax": "off",
+      "no-param-reassign": "off",
+      "no-return-assign": "off",
+      "no-await-in-loop": "off"
+    }
   }
 }

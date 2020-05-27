@@ -1,18 +1,27 @@
 const { pathCompress } = require('./path-compress');
 
 async function renderHTML(current, previous) {
-  if (typeof current === 'undefined' || current === null || current === NaN) return '';
+  if (typeof current === 'undefined' || current === null) return '';
   if (typeof current !== 'object') return String(current);
   if (current instanceof Array) {
     const nodes = [];
 
     for (const i in current) {
-      nodes.push(await renderHTML(current[i], previous && previous[i]));
+      if (Object.prototype.hasOwnProperty.call(i, current)) {
+        nodes.push(await renderHTML(current[i], previous && previous[i]));
+      }
     }
 
     return nodes.join('');
   }
-  const { path, props, type, instance, children } = current;
+
+  const {
+    path,
+    props,
+    type,
+    instance,
+    children,
+  } = current;
 
   if (typeof instance !== 'undefined') {
     return renderHTML(instance, previous && previous.instance);

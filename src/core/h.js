@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 function h(type, props = null, ...children) {
   if (props) {
     delete props.__self;

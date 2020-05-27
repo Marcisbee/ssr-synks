@@ -6,20 +6,20 @@ const sessionController = require('./sessionController');
 
 const wss = new WebSocket.Server({ port: config.socket.port });
 
-wss.on('connection', function connection(ws) {
+wss.on('connection', (ws) => {
   const action = {
     init(data) {
       ws.send(
         JSON.stringify(
-          ['init', data]
-        )
+          ['init', data],
+        ),
       );
     },
     update(path, data) {
       ws.send(
         JSON.stringify(
-          ['update', path, data]
-        )
+          ['update', path, data],
+        ),
       );
     },
   };
@@ -27,7 +27,7 @@ wss.on('connection', function connection(ws) {
   let cookie;
   let sessionId;
   let session;
-  let handler = (path, tree) => {
+  const handler = (path, tree) => {
     action.update(path, tree);
   };
 
@@ -67,8 +67,6 @@ wss.on('connection', function connection(ws) {
 
       sessionController.subscribe(sessionId, handler);
       action.update(0, session.html);
-
-      return;
     }
   });
 });

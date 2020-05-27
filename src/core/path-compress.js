@@ -4,4 +4,4 @@ function pathCompress(path) {
 
 module.exports = {
   pathCompress,
-}
+};

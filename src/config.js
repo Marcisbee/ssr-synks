@@ -12,4 +12,4 @@ module.exports = {
   session: {
     name: 'SSR_SESSION',
   },
-}
+};

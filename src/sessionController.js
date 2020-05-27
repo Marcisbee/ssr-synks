@@ -21,7 +21,7 @@ module.exports = {
   async message(id, path, name, event) {
     const session = this.get(id);
 
-    return await session.message(path, name, event);
+    return session.message(path, name, event);
   },
   update(id, path, value) {
     const session = this.get(id);
@@ -49,4 +49,4 @@ module.exports = {
 
     delete sessions[id];
   },
-}
+};
