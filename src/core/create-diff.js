@@ -1,5 +1,34 @@
 import { renderHTML } from './render-html';
 
+function diffProps(currentProps, previousProps) {
+  const currentKeys = Object.keys(currentProps || {});
+  const previousKeys = Object.keys(previousProps || {});
+  const keys = [
+    ...new Set([
+      ...currentKeys,
+      ...previousKeys,
+    ]),
+  ];
+
+  return keys.reduce((acc, key) => {
+    if (currentProps[key] === previousProps[key]) {
+      return acc;
+    }
+
+    if (currentProps[key] === undefined) {
+      return {
+        ...acc,
+        [key]: null,
+      };
+    }
+
+    return {
+      ...acc,
+      [key]: currentProps[key],
+    };
+  }, {});
+}
+
 /**
  * @param {any} currentNode
  * @param {any} previousNode
@@ -14,11 +43,13 @@ export async function createDiff(currentNode, previousNode) {
   }
 
   if (currentNode instanceof Array) {
-    const length = Math.max(currentNode.length, previousNode.length || 0);
+    const flatCurrentNode = currentNode.flat(2);
+    const flatPreviousNode = [].concat(previousNode).flat(2);
+    const length = Math.max(flatCurrentNode.length, flatPreviousNode.length || 0);
     const output = {};
 
     for (let index = 0; index < length; index += 1) {
-      output[index] = await createDiff(currentNode[index], previousNode[index]);
+      output[index] = await createDiff(flatCurrentNode[index], flatPreviousNode[index]);
     }
 
     return output;
@@ -50,7 +81,7 @@ export async function createDiff(currentNode, previousNode) {
   }
 
   return {
-    props: 'DIFF',
+    props: diffProps(currentNode.props, previousNode.props),
     children: await createDiff(currentNode.children, previousNode.children),
   };
 }

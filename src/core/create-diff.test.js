@@ -25,7 +25,11 @@ test('returns diff for equal node', async () => {
   const output = await createDiff(
     {
       type: 'div',
-      props: {},
+      props: {
+        data: '1',
+        class: 'foo',
+        onclick() { },
+      },
       children: [
         'Hello world',
         {
@@ -37,7 +41,11 @@ test('returns diff for equal node', async () => {
     },
     {
       type: 'div',
-      props: {},
+      props: {
+        data: '1',
+        class: 'foo4',
+        id: 'bar',
+      },
       children: [
         {
           type: 'span',
@@ -59,6 +67,10 @@ test('returns diff for equal node', async () => {
       2: undefined,
       3: null,
     },
-    props: 'DIFF',
+    props: {
+      class: 'foo',
+      id: null,
+      onclick: expect.any(Function),
+    },
   });
 });

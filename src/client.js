@@ -10,6 +10,14 @@ export function connect(win, doc, helpers, name, port, sessionName) {
         };
       }
 
+      case 'input': {
+        return {
+          data: event.data,
+          inputType: event.inputType,
+          value: event.target.value,
+        };
+      }
+
       case 'submit': {
         return {
           values: Array.from(event.target).reduce(
