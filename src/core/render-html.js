@@ -1,5 +1,22 @@
 import { pathCompress } from './path-compress';
 
+const selfClosingTags = [
+  'area',
+  'base',
+  'br',
+  'col',
+  'embed',
+  'hr',
+  'img',
+  'input',
+  'link',
+  'meta',
+  'param',
+  'source',
+  'track',
+  'wbr',
+];
+
 export async function renderHTML(current, previous) {
   if (typeof current === 'undefined' || current === null) return '';
   if (typeof current !== 'object') return String(current);
@@ -36,6 +53,10 @@ export async function renderHTML(current, previous) {
       : value;
     return `${key}=${JSON.stringify(String(normalValue))}`;
   }).join(' ');
+
+  if (selfClosingTags.includes(type)) {
+    return `<${type} ${attributes}/>`;
+  }
 
   return `<${type} ${attributes}>${childNodes}</${type}>`;
 }

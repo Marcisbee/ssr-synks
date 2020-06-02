@@ -42,6 +42,23 @@ export function connect(win, doc, helpers, name, port, sessionName) {
     }
   }
 
+  function patchProps(props, target) {
+    if (!props || typeof props !== 'object') {
+      return;
+    }
+
+    Object.entries(props).forEach(([key, value]) => {
+      if (value === null) {
+        // Remove prop
+        target.removeAttribute(key);
+        return;
+      }
+
+      // Update prop
+      target.setAttribute(key, value);
+    });
+  }
+
   function patchDiff(node, target) {
     // No difference
     if (typeof node === 'undefined') {
@@ -56,21 +73,19 @@ export function connect(win, doc, helpers, name, port, sessionName) {
 
     // Replace node
     if (typeof node !== 'object') {
-      // console.log(target, node);
       if (target.nodeType === 3) {
         target.textContent = node;
         return;
       }
 
-      target.innerHTML = node;
+      target.outerHTML = node;
       return;
     }
 
-    // Update props
-    // Update children
+    // Update props & children
     if (node.children && node.props) {
       patchDiff(node.children, target);
-      // @TODO: Patch props
+      patchProps(node.props, target);
       return;
     }
 

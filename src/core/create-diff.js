@@ -90,11 +90,7 @@ export async function createDiff(currentNode, previousNode) {
     return createDiff(currentNode.instance, previousNode.instance);
   }
 
-  if (currentNode.type !== previousNode.type && currentNode.type !== previousNode.instance.type) {
-    console.log({
-      currentNode,
-      previousNode,
-    });
+  if (currentNode.type !== previousNode.type) {
     return renderHTML(currentNode);
   }
 

@@ -74,6 +74,23 @@ function Time(props) {
   return [new Date().toLocaleTimeString(), ' : ', state];
 }
 
+function ControlledInput() {
+  const [state, setState] = SSR.useState('');
+
+  return (
+    <div>
+      <strong>{state}</strong><br />
+      <input
+        type="text"
+        oninput={({ value }) => {
+          setState(value);
+        }}
+        value={state}
+      />
+    </div>
+  );
+}
+
 export default function Index(props) {
   const [state, setState] = SSR.useState(0);
   const session = SSR.useSession();
