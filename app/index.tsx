@@ -52,7 +52,8 @@ function Login(props) {
     return (
       <div>
         <h1>Hello {user}!</h1>
-        <button onclick={signOut}>Sign out</button>
+        123
+        <button type="button" onclick={signOut}>Sign out</button>
       </div>
     );
   }
@@ -99,10 +100,11 @@ export default function Index(props) {
   return (
     <div>
       {state} |
-      <div>
+      {/* <div>
         <Time />
-      </div>
+      </div> */}
       <Login />
+      <ControlledInput />
       <Counter p={p} s={state} />
       <Counter p={p + 1} s={state} />
       <button onclick={() => { setState(state + 1) }}>{p}</button>

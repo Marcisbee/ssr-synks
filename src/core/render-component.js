@@ -22,7 +22,7 @@ export async function renderComponent(current, context) {
   };
 
   // Pass component state to next rendered tree
-  if (context.previous && !current.instance && context.previous.type === current.type) {
+  if (context.previous && context.previous.type === current.type) {
     current.state = context.previous.state;
   }
 
@@ -40,6 +40,7 @@ export async function renderComponent(current, context) {
     context.previous = {};
   }
 
+  // @TODO: Figure out why child state is not saved!
   current.instance = await render(output, {
     ...context,
     previous: context.previous.instance || {},

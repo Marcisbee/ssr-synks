@@ -32,8 +32,9 @@ function diffProps(currentProps, previousProps) {
 function flatNodes(nodes) {
   return nodes
     .flat(2)
-    .reduce((acc, node, index) => {
-      const previous = acc[index - 1];
+    .reduce((acc, node) => {
+      const lastIndex = acc.length - 1;
+      const previous = acc[lastIndex];
 
       if (typeof previous === 'undefined') {
         return acc.concat(node);
@@ -43,8 +44,8 @@ function flatNodes(nodes) {
         return acc;
       }
 
-      if (typeof node !== 'object') {
-        acc[index - 1] = `${previous}${node}`;
+      if (typeof node !== 'object' && typeof previous !== 'object') {
+        acc[lastIndex] = `${previous}${node}`;
         return acc;
       }
 

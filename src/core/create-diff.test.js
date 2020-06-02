@@ -12,6 +12,12 @@ test('returns undefined with same input 1, 1', async () => {
   expect(output).toEqual(undefined);
 });
 
+test('returns undefined with same input 0, 0', async () => {
+  const output = await createDiff(0, 0);
+
+  expect(output).toEqual(undefined);
+});
+
 test('returns fully replaced html node', async () => {
   const output = await createDiff(
     { type: 'div', props: {}, path: [1] },
@@ -19,6 +25,15 @@ test('returns fully replaced html node', async () => {
   );
 
   expect(output).toEqual('<div data-sx="MQ=="></div>');
+});
+
+test('returns undefined for deeply equal node', async () => {
+  const output = await createDiff(
+    { type: 'div', props: {}, path: [1], children: [1] },
+    { type: 'div', props: {}, path: [1], children: [1] },
+  );
+
+  expect(output).toEqual(undefined);
 });
 
 test('returns diff for equal node', async () => {

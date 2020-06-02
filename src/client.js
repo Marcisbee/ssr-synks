@@ -59,7 +59,7 @@ export function connect(win, doc, helpers, name, port, sessionName) {
     });
   }
 
-  function patchDiff(node, target) {
+  function patchDiff(node, target, isParent) {
     // No difference
     if (typeof node === 'undefined') {
       return;
@@ -75,6 +75,11 @@ export function connect(win, doc, helpers, name, port, sessionName) {
     if (typeof node !== 'object') {
       if (target.nodeType === 3) {
         target.textContent = node;
+        return;
+      }
+
+      if (isParent) {
+        target.innerHTML = node;
         return;
       }
 
@@ -155,7 +160,7 @@ export function connect(win, doc, helpers, name, port, sessionName) {
         return;
       }
 
-      patchDiff(diff, doc.body);
+      patchDiff(diff, doc.body, true);
     }
 
     // Object.keys(update).forEach((key) => {
