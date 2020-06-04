@@ -18,7 +18,7 @@ export async function renderComponent(current, context) {
     const rendered = await render(current, context);
 
     // Send update to browser
-    context.update(rendered, context.previous);
+    context.update(current, rendered);
   };
 
   // Pass component state to next rendered tree
@@ -34,22 +34,17 @@ export async function renderComponent(current, context) {
   destroyTree(context.previous, context.methods);
 
   // Set previous tree as it's instance because we are rendering components instance
-  const previous = { ...current };
-
-  if (!context.previous) {
-    context.previous = {};
-  }
 
   // @TODO: Figure out why child state is not saved!
-  current.instance = await render(output, {
+  const rendered = await render(output, {
     ...context,
-    previous: context.previous.instance || {},
+    previous: context.previous.instance,
   });
 
+  current.instance = rendered;
+
   // Set current tree as previous tree
-  if (context.previous) {
-    Object.assign(context.previous, previous);
-  }
+  Object.assign(context.previous, current);
 
   return current;
 }
