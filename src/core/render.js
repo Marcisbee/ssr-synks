@@ -20,6 +20,11 @@ export async function render(current, context) {
 
   if (current.type instanceof Function) {
     current.path = context.path.concat(context.index);
+    if (!context.previous) {
+      context.previous = {
+        instance: {},
+      };
+    }
     return renderComponent(current, context);
   }
 

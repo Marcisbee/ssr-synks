@@ -14,7 +14,7 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "npm start --prefix ./app",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test": "node node_modules/jest/bin/jest.js",
     "lint": "eslint"
   },
   "repository": {
@@ -33,11 +33,25 @@
     "ws": "^7.3.0"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.10.2",
     "@types/jest": "^25.2.3",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-plugin-import": "^2.20.2",
     "jest": "^26.0.1"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": "13.2"
+          },
+          "modules": "commonjs"
+        }
+      ]
+    ]
   },
   "eslintConfig": {
     "env": {
