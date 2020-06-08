@@ -92,7 +92,33 @@ function ControlledInput() {
   );
 }
 
-export default function Index(props) {
+function useRoutes(routes) {
+  return routes['/']();
+}
+
+const routes = {
+  '/': () => <Home />,
+  '/about': () => 'About',
+  '/users/:userId': ({ userId }) => `Users ${userId}`,
+};
+
+export default function App() {
+  let router = useRoutes(routes);
+
+  return (
+    <div>
+      <div>
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/users/1">Tom</a>
+        <a href="/users/2">Jane</a>
+      </div>
+      {router}
+    </div>
+  );
+}
+
+function Home(props) {
   const [state, setState] = SSR.useState(0);
   const session = SSR.useSession();
   const cookie = SSR.useCookie();
