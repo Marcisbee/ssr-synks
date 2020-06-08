@@ -38,7 +38,11 @@ function cc(value) {
       .filter((a) => !!a);
   }
 
-  return JSON.stringify(value);
+  if (!value) {
+    return null;
+  }
+
+  return String(value);
 }
 
 export default function Index() {
