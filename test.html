@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app"></div>
+
+  <script src="https://unpkg.com/htm@2.2.1/dist/htm.js" crossorigin></script>
+  <script type="module">
+    import Resync from '/src/v2/index.js';
+    import { mount } from '/src/v2/mount.js';
+    const { h } = Resync;
+    const html = htm.bind(h);
+
+    class Context {
+      value = 2;
+    }
+
+    function* Counter() {
+      const counter = yield Context;
+
+      console.log({ counter }, counter.value);
+
+      return html`
+        <h1>${counter.value}</h1>
+      `;
+    }
+
+    function* App() {
+      return html`
+        <${Context}>
+          <${Counter} />
+        <//>
+      `;
+    }
+
+    (async () => {
+      const output = await mount(h(App));
+
+      console.log(output);
+    })();
+  </script>
+</body>
+
+</html>
