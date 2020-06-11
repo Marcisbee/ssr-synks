@@ -111,7 +111,6 @@ async function renderGenerator(current, context) {
     const [contextInstance, subscribe] = context.instances[contestName];
 
     rawInstance = await iterable.next(contextInstance);
-    debugger
   };
 
   current.instance = await render(rawInstance && rawInstance.value, context);
