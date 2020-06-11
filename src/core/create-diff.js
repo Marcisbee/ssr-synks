@@ -1,4 +1,4 @@
-import { renderHTML } from './render-html';
+import { renderHTML } from './render-html.js';
 
 function diffProps(currentProps, previousProps) {
   const currentKeys = Object.keys(currentProps || {});

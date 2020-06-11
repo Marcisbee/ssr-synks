@@ -1,4 +1,4 @@
-import { pathCompress } from './path-compress';
+import { pathCompress } from './path-compress.js';
 
 const selfClosingTags = [
   'area',

@@ -1,7 +1,7 @@
-import { h } from './h';
-import { useState } from './use-state';
-import { useSession } from './use-session';
-import { useCookie } from './use-cookie';
+import { h } from './h.js';
+import { useState } from './use-state.js';
+import { useSession } from './use-session.js';
+import { useCookie } from './use-cookie.js';
 
 export default {
   h,

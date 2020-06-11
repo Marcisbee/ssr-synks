@@ -1,7 +1,7 @@
-import { renderChildren } from './render-children';
-import { updateProps } from './update-props';
-import { renderArray } from './render-array';
-import { renderComponent } from './render-component';
+import { renderChildren } from './render-children.js';
+import { updateProps } from './update-props.js';
+import { renderArray } from './render-array.js';
+import { renderComponent } from './render-component.js';
 
 export async function render(current, context) {
   context = {

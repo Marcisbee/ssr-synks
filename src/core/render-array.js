@@ -1,4 +1,4 @@
-import { render } from './render';
+import { render } from './render.js';
 
 function getNestedArrayLength(value) {
   if (!(value instanceof Array)) {

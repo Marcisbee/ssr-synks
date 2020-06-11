@@ -1,4 +1,4 @@
-import { getActiveNode } from './active-node';
+import { getActiveNode } from './active-node.js';
 
 export function useCookie() {
   const { context } = getActiveNode();

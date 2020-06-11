@@ -1,5 +1,5 @@
-import { render } from './render';
-import { createDiff } from './create-diff';
+import { render } from './render.js';
+import { createDiff } from './create-diff.js';
 
 export async function mount(current, previous, update) {
   if (!(current instanceof Array)) {

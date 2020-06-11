@@ -1,4 +1,4 @@
-import { renderArray } from './render-array';
+import { renderArray } from './render-array.js';
 
 export async function renderChildren(current, context) {
   const newContext = {
