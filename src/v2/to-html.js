@@ -53,6 +53,7 @@ export async function toHTML(current) {
   const attributes = Object.entries({
     ...props,
     'data-sx': path.join('.'),
+    // 'data-sx': pathCompress(path.join('.')),
   }).map(([key, value]) => {
     const normalValue = value instanceof Function
       ? '__sx(event)'
