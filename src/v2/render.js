@@ -100,11 +100,10 @@ function createProxy(target, onChange) {
 }
 
 async function renderContext(current, context) {
-  const props = prepareProps(current);
   const name = current.type.name;
   let subscribers = [];
 
-  const contextInstance = new current.type(props);
+  const contextInstance = new current.type(current.props);
 
   const proxyInstance = createProxy(contextInstance, async () => {
     for (const subscriber of subscribers) {
@@ -142,9 +141,31 @@ async function renderGenerator(current, context) {
   const iterable = (await current.type(props));
   let rawInstance = iterable.next();
 
+  if (!current.subscribed) {
+    current.subscribed = [];
+  }
+
+  const update = async () => {
+    console.log(current, 'component updated');
+    rawInstance = await iterable.next();
+
+    // @TODO: Unsubscribe from previous instance tree
+    const previousInstance = current.instance;
+    // current.subscribed.forEach(unsubscribe => unsubscribe());
+
+    current.instance = await render(rawInstance && rawInstance.value, context);
+
+    // @TODO: Call global update hook
+    // console.log(current.path, current.instance, previousInstance);
+  };
+
   while (isContext(rawInstance.value)) {
     const contestName = rawInstance.value.name;
     const [contextInstance, subscribe] = context.instances[contestName];
+
+    current.subscribed.push(
+      subscribe(update),
+    );
 
     rawInstance = await iterable.next(contextInstance);
   };
@@ -176,6 +197,8 @@ export async function render(current, context) {
   if (current === undefined || current === null || typeof current !== 'object') {
     return current;
   }
+
+  current.path = context.path;
 
   if (isContext(current.type)) {
     return renderContext(current, context);

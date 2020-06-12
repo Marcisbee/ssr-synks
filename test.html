@@ -20,35 +20,52 @@
 
     class Context {
       value = 2;
+      increment() {
+        this.value += 1;
+      }
     }
 
     function* Counter() {
       const counter = yield Context;
 
-      return html`
-        <h1>${counter.value} 123 ${[null, true, [1, 2], 3, null]}<i>b</i></h1>
-        <input value="foo" />
-        cool beans
-      `;
+      while (true) {
+        yield html`
+          <h1>[${counter.value}] 123 ${[null, true, [1, 2], 3, null]}<i>b</i></h1>
+          <input value="foo" />
+          <button onclick=${() => counter.increment()}>increment</button>
+          cool beans
+        `;
+      }
     }
 
     function* App() {
       return html`
-        <${Context}>
-          <${Counter} />
-          <br />
-        <//>
+        <div>
+          <${Context}>
+            <${Counter} />
+            <br />
+          <//>
+        </div>
       `;
     }
 
     (async () => {
       const output = await mount(h(App));
 
+      const onClick = output.instance.children[0].children[0].instance[2].props.onclick;
+
       console.log(output);
 
       const html = await toHTML(output);
       app.innerHTML = html;
       console.log(html);
+
+      window.press = () => {
+        onClick();
+        setTimeout(async () => {
+          app.innerHTML = await toHTML(output);
+        });
+      }
     })();
   </script>
 </body>
