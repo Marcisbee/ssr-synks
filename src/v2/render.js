@@ -136,6 +136,22 @@ async function renderContext(current, context) {
   return current;
 }
 
+function destroyChildTree(currentRaw) {
+  [].concat(currentRaw).forEach((current) => {
+    if (!isNode(current)) return;
+
+    if (current.subscribed) {
+      current.subscribed.forEach((unsubscribe) => unsubscribe());
+    }
+
+    const children = current.instance || current.children;
+
+    if (!children) return;
+
+    destroyChildTree(children);
+  });
+}
+
 async function renderGenerator(current, context) {
   const props = prepareProps(current);
   const iterable = (await current.type(props));
@@ -149,9 +165,8 @@ async function renderGenerator(current, context) {
     console.log(current, 'component updated');
     rawInstance = await iterable.next();
 
-    // @TODO: Unsubscribe from previous instance tree
     const previousInstance = current.instance;
-    // current.subscribed.forEach(unsubscribe => unsubscribe());
+    destroyChildTree(previousInstance);
 
     current.instance = await render(rawInstance && rawInstance.value, context);
 
@@ -161,6 +176,12 @@ async function renderGenerator(current, context) {
 
   while (isContext(rawInstance.value)) {
     const contestName = rawInstance.value.name;
+    const currentContext = context.instances[contestName];
+
+    if (typeof currentContext === 'undefined') {
+      throw new Error(`Trying to access "${contestName}" in <${current.type.name}> component, but it was not defined in parent tree`);
+    }
+
     const [contextInstance, subscribe] = context.instances[contestName];
 
     current.subscribed.push(

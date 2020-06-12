@@ -19,9 +19,27 @@
     const html = htm.bind(h);
 
     class Context {
-      value = 2;
+      value = 0;
       increment() {
         this.value += 1;
+      }
+    }
+
+    class Context2 {
+      value = 0;
+      increment() {
+        this.value += 1;
+      }
+    }
+
+    function* Use1() {
+      const counter = yield Context;
+      const counter2 = yield Context2;
+
+      while (true) {
+        yield html`
+          <h1 onclick=${() => counter2.increment()}>(${counter.value} | ${counter2.value})</h1>
+        `;
       }
     }
 
@@ -33,6 +51,7 @@
           <h1>[${counter.value}] 123 ${[null, true, [1, 2], 3, null]}<i>b</i></h1>
           <input value="foo" />
           <button onclick=${() => counter.increment()}>increment</button>
+          <${Use1} />
           cool beans
         `;
       }
@@ -42,8 +61,10 @@
       return html`
         <div>
           <${Context}>
-            <${Counter} />
-            <br />
+            <${Context2}>
+              <${Counter} />
+              <br />
+            <//>
           <//>
         </div>
       `;
@@ -52,7 +73,8 @@
     (async () => {
       const output = await mount(h(App));
 
-      const onClick = output.instance.children[0].children[0].instance[2].props.onclick;
+      const onClick = output.instance.children[0].children[0].children[0].instance[2].props.onclick;
+      const onClick2 = output.instance.children[0].children[0].children[0].instance[3].instance.props.onclick;
 
       console.log(output);
 
@@ -62,6 +84,13 @@
 
       window.press = () => {
         onClick();
+        setTimeout(async () => {
+          app.innerHTML = await toHTML(output);
+        });
+      }
+
+      window.press2 = () => {
+        onClick2();
         setTimeout(async () => {
           app.innerHTML = await toHTML(output);
         });
