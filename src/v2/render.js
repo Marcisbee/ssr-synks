@@ -3,37 +3,73 @@ export function isContext(value) {
 }
 
 export function isGenerator(value) {
-  return value.constructor.name === 'GeneratorFunction';
+  return typeof value === 'function' && value.constructor.name === 'GeneratorFunction';
 }
 
 export function isComponent(value) {
   return typeof value === 'function';
 }
 
-function getNestedArrayLength(value) {
-  if (!(value instanceof Array)) {
-    return 1;
+function normalizePrimitive(primitive) {
+  if (primitive === null) {
+    return '';
   }
 
-  return value.reduce(
-    (sum, item) => sum + getNestedArrayLength(item),
-    0,
-  );
+  return primitive;
 }
 
-async function renderArray(current, context) {
+function isNode(current) {
+  if (current === null || typeof current !== 'object') {
+    return false;
+  }
+
+  return typeof current.type !== 'undefined';
+}
+
+function mergePrimitives(output, currentRaw) {
+  const currentArray = [].concat(currentRaw).flat(5);
+
+  currentArray.forEach((current) => {
+    if (output.length === 0) {
+      output.push(
+        normalizePrimitive(current),
+      );
+      return;
+    }
+
+    if (isNode(current)) {
+      output.push(current);
+      return;
+    }
+
+    const [previous] = output.slice(-1);
+
+    if (previous !== null && typeof previous === 'object') {
+      output.push(
+        normalizePrimitive(current),
+      );
+      return;
+    }
+
+    output[output.length - 1]
+      = `${String(previous)}${String(normalizePrimitive(current))}`;
+  });
+}
+
+async function renderArray(currentArray, context) {
   const output = [];
   let length = context.index;
 
-  for (const i in current) {
+  for (const i in currentArray) {
     const newContext = {
       ...context,
       index: length,
     };
-    const result = await render(current[i], newContext);
+    const result = await render(currentArray[i], newContext);
 
-    length += getNestedArrayLength(result);
-    output.push(result);
+    mergePrimitives(output, result);
+
+    length = context.index + output.length;
   }
 
   return output;
@@ -90,7 +126,7 @@ async function renderContext(current, context) {
     },
   ];
 
-  current.instance = await renderArray(current.children, {
+  current.children = await renderArray(current.children, {
     ...context,
     instances: {
       ...context.instances,
@@ -120,11 +156,6 @@ async function renderGenerator(current, context) {
 
 async function renderComponent(current, context) {
   const props = prepareProps(current);
-
-  if (isGenerator(current.type)) {
-    return renderGenerator(current, context);
-  }
-
   const rawInstance = await current.type(props);
 
   current.instance = await render(rawInstance, context);
@@ -148,6 +179,10 @@ export async function render(current, context) {
 
   if (isContext(current.type)) {
     return renderContext(current, context);
+  }
+
+  if (isGenerator(current.type)) {
+    return renderGenerator(current, context);
   }
 
   if (isComponent(current.type)) {
