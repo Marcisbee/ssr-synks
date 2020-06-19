@@ -1,4 +1,4 @@
-import SSR from 'ssr-synks';
+import SSR from 'resync';
 
 import { atom, use } from './db';
 

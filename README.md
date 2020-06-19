@@ -1,1 +1,1 @@
-# ssr-synks
+# resync

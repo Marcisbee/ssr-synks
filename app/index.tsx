@@ -1,4 +1,4 @@
-import SSR from 'ssr-synks';
+import SSR from 'resync';
 
 import routes from './routes';
 import { Counter } from './test';

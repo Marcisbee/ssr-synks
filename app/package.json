@@ -8,6 +8,6 @@
     "start": "ssr"
   },
   "dependencies": {
-    "ssr-synks": "file:.."
+    "resync": "file:.."
   }
 }

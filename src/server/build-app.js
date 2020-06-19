@@ -15,7 +15,7 @@ export async function buildApp() {
     target: 'esnext',
     format: 'esm',
     platform: 'node',
-    external: ['ssr-synks'],
+    external: ['resync'],
   })
     .catch(() => process.exit(1));
 }

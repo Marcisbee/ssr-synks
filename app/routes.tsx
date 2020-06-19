@@ -1,4 +1,4 @@
-import SSR from 'ssr-synks';
+import SSR from 'resync';
 
 // import Home from './home';
 import { Test } from './test';
