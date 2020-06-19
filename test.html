@@ -85,27 +85,25 @@
       const output = await mount(h(App), onUpdate);
 
       const onClick = output.actions['0.2'].onclick;
-      const onClick2 = output.actions['0.2'].onclick;
+      const onClick2 = output.actions['0.3'].onclick;
 
       console.log(output);
 
       const html = await toHTML(output.tree);
-      // app.innerHTML = html;
+      app.innerHTML = html;
       console.log(html);
 
       window.press = () => {
         onClick();
         setTimeout(async () => {
-          // app.innerHTML = await toHTML(output);
-          console.log(await toHTML(output.tree));
+          app.innerHTML = await toHTML(output.tree);
         });
       }
 
       window.press2 = () => {
         onClick2();
         setTimeout(async () => {
-          // app.innerHTML = await toHTML(output);
-          console.log(await toHTML(output.tree));
+          app.innerHTML = await toHTML(output.tree);
         });
       }
     })();

@@ -1,3 +1,4 @@
+import { CONTEXT_INSTANCE } from '../symbols.js';
 import { createProxy } from '../utils/create-proxy.js';
 import { renderArray } from './array.js';
 
@@ -6,6 +7,8 @@ export async function renderContext(current, context) {
   let subscribers = [];
 
   const contextInstance = new current.type(current.props);
+
+  contextInstance[CONTEXT_INSTANCE] = true;
 
   const proxyInstance = createProxy(contextInstance, async () => {
     for (const subscriber of subscribers) {

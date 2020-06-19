@@ -2,6 +2,7 @@ import { renderArray } from './render/array.js';
 import { renderComponent } from './render/component.js';
 import { renderContext } from './render/context.js';
 import { renderGenerator } from './render/generator.js';
+import { CONTEXT_INSTANCE } from './symbols.js';
 import { isComponent } from './utils/is-component.js';
 import { isContext } from './utils/is-context.js';
 import { isGenerator } from './utils/is-generator.js';
@@ -19,6 +20,10 @@ export async function render(current, context) {
 
   if (current === undefined || current === null || typeof current !== 'object') {
     return current;
+  }
+
+  if (current[CONTEXT_INSTANCE]) {
+    throw new Error(`Context "${current.constructor.name}" instance used in view layer`);
   }
 
   current.path = context.path;
