@@ -14,6 +14,13 @@ export async function renderGenerator(current, context) {
 
   const update = async () => {
     const previousInstance = current.instance;
+
+    // Tree is unsubscribed, no need to update this
+    if (current.isUnsubscribed) {
+      return;
+    }
+
+    current.instance = null;
     unsubscribeTree(previousInstance);
 
     rawInstance = await iterable.next();

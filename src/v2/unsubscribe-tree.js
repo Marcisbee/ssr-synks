@@ -5,7 +5,8 @@ export function unsubscribeTree(currentRaw) {
     if (!isNode(current)) return;
 
     if (current.subscribed) {
-      current.subscribed.forEach((unsubscribe) => unsubscribe());
+      current.isUnsubscribed = true;
+      current.subscribed.slice().forEach((unsubscribe) => unsubscribe());
     }
 
     const children = current.instance || current.children;
