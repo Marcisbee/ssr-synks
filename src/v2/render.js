@@ -205,6 +205,18 @@ async function renderComponent(current, context) {
   return current;
 }
 
+function parseProps(current, context) {
+  if (!current.props || typeof current.props !== 'object') return;
+
+  const { path } = current;
+
+  Object.entries(current.props).forEach(([key, value]) => {
+    if (typeof value !== 'function') return;
+
+    context.addAction(path, key, value);
+  });
+}
+
 export async function render(current, context) {
   context = {
     ...context,
@@ -236,7 +248,7 @@ export async function render(current, context) {
   context.path.push(context.index);
   current.path = context.path;
 
-  // updateProps(current, context);
+  parseProps(current, context);
 
   if (current.children && current.children.length > 0) {
     current.children = await renderArray(
