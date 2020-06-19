@@ -1,29 +1,7 @@
 import SSR from 'ssr-synks';
 
 import routes from './routes';
-
-function usePath(): [
-  string,
-  (newPath: string) => void,
-] {
-  const path = '/';
-
-  return [
-    path,
-    (newPath) => { },
-  ];
-}
-
-function useRoutes(
-  routes: { [k: string]: (props) => any },
-  options?: {
-    basePath?: string,
-  },
-) {
-  let [path] = usePath();
-
-  return routes[path]({});
-}
+import { Counter } from './test';
 
 function cc(value) {
   if (Array.isArray(value)) {
@@ -47,14 +25,23 @@ function cc(value) {
 
 class Router {
   path = '/';
-  render() {
-    return (
-      'routes'
-    );
+
+  navigate(path) {
+    this.path = path;
+  }
+
+  outlet = ({ routes }) => {
+    const route = routes[this.path];
+
+    if (!route) {
+      return null;
+    }
+
+    return SSR.h(route);
   }
 }
 
-function* Child() {
+function* App() {
   const router = yield Router;
 
   const aboutClass = {
@@ -70,7 +57,9 @@ function* Child() {
           <a href="/users/1">Tom</a>
           <a href="/users/2">Jane</a>
         </div>
-        <router.render />
+        <Counter>
+          <router.outlet routes={routes} />
+        </Counter>
       </div>
     );
   }
@@ -79,25 +68,7 @@ function* Child() {
 export default function Index() {
   return (
     <Router>
-      <Child />
+      <App />
     </Router>
   );
-  // let router = useRoutes(routes);
-  // let [path] = usePath();
-
-  // const aboutClass = {
-  //   active: path === '/about',
-  // };
-
-  // return (
-  //   <div>
-  //     <div>
-  //       <a href="/">Home</a>
-  //       <a href="/about" class={cc(aboutClass)}>About</a>
-  //       <a href="/users/1">Tom</a>
-  //       <a href="/users/2">Jane</a>
-  //     </div>
-  //     {router}
-  //   </div>
-  // );
 }
