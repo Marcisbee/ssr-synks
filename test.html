@@ -15,6 +15,7 @@
     import Resync from '/src/v2/index.js';
     import { mount } from '/src/v2/mount.js';
     import { toHTML } from '/src/v2/to-html.js';
+    import { diffTree } from '/src/v2/diff-tree.js';
     const { h } = Resync;
     const html = htm.bind(h);
 
@@ -71,8 +72,14 @@
     }
 
     (async () => {
-      function onUpdate() {
-        console.log('UPDATE HAPPENING...');
+      async function onUpdate(path, next, previous) {
+        const diff = await diffTree(next, previous);
+        console.log('UPDATE HAPPENING...', {
+          path,
+          next,
+          previous,
+          diff,
+        });
       }
 
       const output = await mount(h(App), onUpdate);

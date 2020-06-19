@@ -168,10 +168,11 @@ async function renderGenerator(current, context) {
     const previousInstance = current.instance;
     destroyChildTree(previousInstance);
 
+    // @TODO: Clear context actions for this tree before render
+
     current.instance = await render(rawInstance && rawInstance.value, context);
 
-    // @TODO: Call global update hook
-    // console.log(current.path, current.instance, previousInstance);
+    context.onUpdate(current.path, current.instance, previousInstance);
   };
 
   while (isContext(rawInstance.value)) {
