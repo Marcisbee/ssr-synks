@@ -13,7 +13,6 @@ export async function renderGenerator(current, context) {
   }
 
   const update = async () => {
-    console.log(current, 'component updated');
     rawInstance = await iterable.next();
 
     const previousInstance = current.instance;
