@@ -1,23 +1,15 @@
 import { exists, readFile, statSync } from 'fs';
 import { createServer } from 'http';
 import nodeCookie from 'node-cookie';
-// eslint-disable-next-line sort-imports
-import { dirname, join, parse as fullParse } from 'path';
-import { fileURLToPath, parse } from 'url';
+import path from 'path';
+import url from 'url';
 
 import { build } from './build.js';
 import { connect } from './client.js';
-import {
-  // @TODO:
-  cookie as _cookie,
-  // @TODO:
-  http as _http,
-  session,
-  socket,
-} from './config.js';
+import * as config from './config.js';
 
 // @ts-ignore
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 // @TODO:
 function getCookie(cookie, name) {
@@ -34,8 +26,8 @@ const helpers = `{ getCookie: ${getCookie.toString()} }`;
 
 function createClientJs() {
   const clientJs = connect.toString();
-  const name = JSON.stringify(_cookie.name);
-  const { port } = socket;
+  const name = JSON.stringify(config.cookie.name);
+  const { port } = config.socket;
 
   return `(${clientJs})(
     window,
@@ -43,7 +35,7 @@ function createClientJs() {
     ${helpers},
     ${name},
     ${port},
-    ${JSON.stringify(session.name)}
+    ${JSON.stringify(config.session.name)}
   )`;
 }
 
@@ -56,7 +48,7 @@ function htmlStructure({ css, app, sessionId }) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <script>
-    window.${session.name} = ${JSON.stringify(sessionId)};
+    window.${config.session.name} = ${JSON.stringify(sessionId)};
   </script>
   ${css || ''}
 </head>
@@ -73,11 +65,11 @@ const server = createServer((req, res) => {
   console.log(`${req.method} ${req.url}`);
 
   // parse URL
-  const parsedUrl = parse(req.url);
+  const parsedUrl = url.parse(req.url);
   // extract URL path
-  let pathname = join(__dirname, `../public/${parsedUrl.pathname}`);
+  let pathname = path.join(__dirname, `../public/${parsedUrl.pathname}`);
   // based on the URL path, extract the file extension. e.g. .js, .doc, ...
-  const { ext } = fullParse(pathname);
+  const { ext } = path.parse(pathname);
   // maps file extension to MIME type
   const map = {
     '.ico': 'image/x-icon',
@@ -101,15 +93,15 @@ const server = createServer((req, res) => {
   }
 
   exists(pathname, async (exist) => {
-    if ((!exist && ext === '') || pathname === join(__dirname, '../public/')) {
-      let cookie = nodeCookie.get(req, _cookie.name);
+    if ((!exist && ext === '') || pathname === path.join(__dirname, '../public/')) {
+      let cookie = nodeCookie.get(req, config.cookie.name);
       const sessionIdRaw = String(Math.random());
-      const sessionId = nodeCookie.packValue(sessionIdRaw, _cookie.secret, true);
+      const sessionId = nodeCookie.packValue(sessionIdRaw, config.cookie.secret, true);
 
       if (!cookie) {
         const cookieRaw = String(Math.random());
         cookie = nodeCookie.create(
-          res, _cookie.name, cookieRaw, {}, _cookie.secret, true,
+          res, config.cookie.name, cookieRaw, {}, config.cookie.secret, true,
         );
       }
 
@@ -147,7 +139,7 @@ const server = createServer((req, res) => {
   });
 });
 
-export default () => {
-  server.listen(_http.port);
-  console.log(`Server listening on port ${_http.port}`);
-};
+export function startHTTP() {
+  server.listen(config.http.port);
+  console.log(`Server listening on port ${config.http.port}`);
+}

@@ -5,8 +5,7 @@ import { build } from './build.js';
 import { socket } from './config.js';
 import {
   get,
-  // eslint-disable-next-line sort-imports
-  message as _message,
+  message,
   remove,
   subscribe,
   unsubscribe,
@@ -45,13 +44,13 @@ export default () => {
       remove(sessionId);
     });
 
-    ws.on('message', async (message) => {
-      const [type, ...data] = JSON.parse(message.toString());
+    ws.on('message', async (msg) => {
+      const [type, ...data] = JSON.parse(msg.toString());
 
       if (type === 'event' && data.length > 0) {
         const [path, name, event] = data;
 
-        _message(sessionId, path, name, event);
+        message(sessionId, path, name, event);
         return;
       }
 
