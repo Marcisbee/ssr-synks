@@ -10,10 +10,21 @@ export class CounterContext {
 export function* Counter() {
   const counter = yield CounterContext;
 
+  function increment() {
+    counter.count += 1;
+  }
+
+  function decrement() {
+    counter.count -= 1;
+  }
+
   while (true) {
     yield (
       <div>
         <h1>{counter.count}</h1>
+        <button onclick={increment}>+</button>
+        <button onclick={decrement}>-</button>
+        <br />
         <button onclick={counter.increment}>+</button>
       </div>
     );

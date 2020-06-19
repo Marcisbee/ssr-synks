@@ -12,6 +12,7 @@ export async function buildApp() {
     minify: false,
     bundle: true,
     jsxFactory: 'Resync.h',
+    jsxFragment: 'Resync.f',
     target: 'esnext',
     format: 'esm',
     platform: 'node',

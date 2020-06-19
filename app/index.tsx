@@ -41,6 +41,20 @@ class Router {
   }
 }
 
+function* RouterOutlet({ routes }) {
+  const router = yield Router;
+
+  while (true) {
+    const route = routes[router.path];
+
+    if (!route) {
+      yield null;
+    } else {
+      yield Resync.h(route);
+    }
+  }
+}
+
 function* App() {
   const router = yield Router;
 
@@ -58,7 +72,7 @@ function* App() {
           <a href="/users/2">Jane</a>
         </div>
         <CounterContext>
-          <router.outlet routes={routes} />
+          <RouterOutlet routes={routes} />
         </CounterContext>
       </div>
     );

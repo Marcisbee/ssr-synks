@@ -13,16 +13,17 @@ export async function renderGenerator(current, context) {
   }
 
   const update = async () => {
-    rawInstance = await iterable.next();
-
     const previousInstance = current.instance;
     unsubscribeTree(previousInstance);
+
+    rawInstance = await iterable.next();
 
     // @TODO: Clear context actions for this tree before render
 
     current.instance = await render(rawInstance && rawInstance.value, context);
 
-    context.onUpdate(current.path, current.instance, previousInstance);
+    // @TODO: Figure out how to get correct path
+    context.onUpdate(current.instance.path, current.instance, previousInstance);
   };
 
   while (isContext(rawInstance.value)) {

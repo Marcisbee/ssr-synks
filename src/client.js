@@ -148,7 +148,8 @@ export function connect(win, doc, helpers, name, port, sessionName) {
           return;
         }
 
-        const path = win.atob(rawPath);
+        const path = rawPath;
+        // const path = win.atob(rawPath);
         const [, parentPath, childPath] = path.match(/(.*)\.(\d+)$/, '') || [];
         if (typeof parentPath === 'undefined' || typeof childPath === 'undefined') return;
 

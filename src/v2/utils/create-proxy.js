@@ -1,8 +1,19 @@
 export function createProxy(target, onChange) {
-  return new Proxy(target, {
+  const proxy = new Proxy(target, {
     get(t, property) {
       const item = target[property];
-      if (item && typeof item === 'object') return createProxy(item, onChange);
+      if (item && typeof item === 'function') {
+        return (...args) => {
+          const output = item.apply(target, args);
+          onChange();
+
+          return output;
+        };
+      }
+
+      if (item && typeof item === 'object') {
+        return createProxy(item, onChange);
+      }
 
       return item;
     },
@@ -13,4 +24,6 @@ export function createProxy(target, onChange) {
       return true;
     },
   });
+
+  return proxy;
 }

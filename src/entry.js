@@ -3,6 +3,7 @@ import { resolve } from 'path';
 // import { pathCompress } from './core/path-compress.js';
 // import { pathDecompress } from './core/path-decompress.js';
 import * as sessionController from './sessionController.js';
+import { diffTree } from './v2/diff-tree.js';
 import { h } from './v2/h.js';
 import { mount } from './v2/mount.js';
 import { toHTML } from './v2/to-html.js';
@@ -17,10 +18,11 @@ export async function entry({
 
   const session = sessionController.get(props.sessionId);
 
-  function update(rawPath, component, diff) {
-    console.log('update tree', arguments);
+  async function update(rawPath, next, previous) {
+    const path = rawPath.join('.');
     // const path = pathCompress(rawPath.join('.'));
-    // sessionController.update(props.sessionId, path, diff);
+    const diff = await diffTree(next, previous);
+    sessionController.update(props.sessionId, path, diff);
   }
 
   const initialTree = h(Index, props);
@@ -29,13 +31,14 @@ export async function entry({
     tree,
   } = await mount(initialTree, update);
 
-  async function message(rawPath, name, event) {
+  async function message(rawPath, rawName, event) {
     const path = rawPath;
     // const path = pathDecompress(rawPath);
-    const methodsInPath = actions[path];
+    const name = `on${rawName}`;
+    const actionsInPath = actions[path];
 
-    if (methodsInPath && methodsInPath[name]) {
-      return methodsInPath[name](event);
+    if (actionsInPath && actionsInPath[name]) {
+      return actionsInPath[name](event);
     }
 
     return undefined;
