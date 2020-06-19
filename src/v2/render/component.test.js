@@ -68,7 +68,7 @@ test('returns correct output instance', async () => {
         children: [
           {
             type: nested,
-            path: [0, 0],
+            path: [0],
             props: null,
             children: [],
             instance: [],
