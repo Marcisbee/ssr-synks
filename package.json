@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "description": "",
   "type": "module",
-  "main": "src/core/index.js",
-  "module": "src/core/index.js",
+  "main": "src/v2/index.js",
+  "module": "src/v2/index.js",
   "engines": {
     "node": ">=12.x"
   },

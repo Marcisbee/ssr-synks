@@ -1,4 +1,4 @@
-import { destroyTree } from './core/destroy-tree.js';
+import { unsubscribeTree } from './v2/unsubscribe-tree.js';
 
 const sessions = {};
 
@@ -51,7 +51,7 @@ export function unsubscribe(id, handler) {
 
 export function remove(id) {
   if (sessions[id]) {
-    destroyTree(sessions[id].tree);
+    unsubscribeTree(sessions[id].tree);
   }
   delete sessions[id];
 }

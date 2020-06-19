@@ -45,23 +45,59 @@ function cc(value) {
   return String(value);
 }
 
-export default function Index() {
-  let router = useRoutes(routes);
-  let [path] = usePath();
+class Router {
+  path = '/';
+  render() {
+    return (
+      'routes'
+    );
+  }
+}
+
+function* Child() {
+  const router = yield Router;
 
   const aboutClass = {
-    active: path === '/about',
+    active: router.path === '/about',
   };
 
-  return (
-    <div>
+  while (true) {
+    yield (
       <div>
-        <a href="/">Home</a>
-        <a href="/about" class={cc(aboutClass)}>About</a>
-        <a href="/users/1">Tom</a>
-        <a href="/users/2">Jane</a>
+        <div>
+          <a onclick={() => router.navigate('/')}>Home</a>
+          <a onclick={() => router.navigate('/about')} class={cc(aboutClass)}>About</a>
+          <a href="/users/1">Tom</a>
+          <a href="/users/2">Jane</a>
+        </div>
+        <router.render />
       </div>
-      {router}
-    </div>
+    );
+  }
+}
+
+export default function Index() {
+  return (
+    <Router>
+      <Child />
+    </Router>
   );
+  // let router = useRoutes(routes);
+  // let [path] = usePath();
+
+  // const aboutClass = {
+  //   active: path === '/about',
+  // };
+
+  // return (
+  //   <div>
+  //     <div>
+  //       <a href="/">Home</a>
+  //       <a href="/about" class={cc(aboutClass)}>About</a>
+  //       <a href="/users/1">Tom</a>
+  //       <a href="/users/2">Jane</a>
+  //     </div>
+  //     {router}
+  //   </div>
+  // );
 }

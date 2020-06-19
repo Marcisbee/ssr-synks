@@ -1,12 +1,12 @@
-import { renderHTML } from './core/render-html.js';
 import { entry } from './entry.js';
 import { create } from './sessionController.js';
+import { toHTML } from './v2/to-html.js';
 
 export async function build(sessionId, cookie) {
   const session = create(sessionId, cookie);
 
   if (session.html) {
-    session.html = await renderHTML(session.tree);
+    session.html = await toHTML(session.tree);
     return session;
   }
 
