@@ -1,6 +1,6 @@
-import { entry } from './entry';
-import { create } from './sessionController';
-import { renderHTML } from './core/render-html';
+import { renderHTML } from './core/render-html.js';
+import { entry } from './entry.js';
+import { create } from './sessionController.js';
 
 export async function build(sessionId, cookie) {
   const session = create(sessionId, cookie);

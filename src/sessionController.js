@@ -1,4 +1,4 @@
-import { destroyTree } from './core/destroy-tree';
+import { destroyTree } from './core/destroy-tree.js';
 
 const sessions = {};
 

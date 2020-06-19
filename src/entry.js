@@ -1,11 +1,11 @@
 import { resolve } from 'path';
-import * as sessionController from './sessionController';
 
-import { h } from './core/h';
-import { mount } from './core/mount';
-import { renderHTML } from './core/render-html';
-import { pathCompress } from './core/path-compress';
-import { pathDecompress } from './core/path-decompress';
+import { h } from './core/h.js';
+import { mount } from './core/mount.js';
+import { pathCompress } from './core/path-compress.js';
+import { pathDecompress } from './core/path-decompress.js';
+import { renderHTML } from './core/render-html.js';
+import * as sessionController from './sessionController.js';
 
 /**
  * @param {{ props?: Record<string, any> }} options

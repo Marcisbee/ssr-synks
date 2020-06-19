@@ -15,7 +15,7 @@
     "start": "node src/index.js",
     "dev": "npm start --prefix ./app",
     "test": "node node_modules/jest/bin/jest.js",
-    "lint": "eslint"
+    "lint": "eslint ./src"
   },
   "repository": {
     "type": "git",
@@ -38,6 +38,7 @@
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-simple-import-sort": "^5.0.3",
     "jest": "^26.0.1"
   },
   "babel": {
@@ -56,9 +57,12 @@
   "eslintConfig": {
     "env": {
       "browser": true,
-      "module": true,
       "es6": true
     },
+    "ignorePatterns": [
+      "app",
+      "src/core"
+    ],
     "extends": [
       "airbnb-base"
     ],
@@ -67,8 +71,12 @@
       "SharedArrayBuffer": "readonly"
     },
     "parserOptions": {
-      "ecmaVersion": 11
+      "ecmaVersion": 11,
+      "sourceType": "module"
     },
+    "plugins": [
+      "simple-import-sort"
+    ],
     "overrides": [
       {
         "files": [
@@ -81,12 +89,25 @@
     ],
     "rules": {
       "import/prefer-default-export": "off",
+      "import/no-cycle": "off",
       "no-underscore-dangle": "off",
       "no-restricted-syntax": "off",
       "no-param-reassign": "off",
       "no-return-assign": "off",
       "no-await-in-loop": "off",
-      "guard-for-in": "off"
+      "guard-for-in": "off",
+      "new-cap": "off",
+      "sort-imports": [
+        "error",
+        {
+          "ignoreDeclarationSort": true
+        }
+      ],
+      "import/extensions": [
+        "error",
+        "always"
+      ],
+      "simple-import-sort/sort": "error"
     }
   }
 }

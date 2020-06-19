@@ -1,18 +1,20 @@
+import { exists, readFile, statSync } from 'fs';
 import { createServer } from 'http';
-import { parse, fileURLToPath } from 'url';
-import { exists, statSync, readFile } from 'fs';
-import { join, parse as _parse, dirname } from 'path';
 import nodeCookie from 'node-cookie';
-import { build } from './build';
+// eslint-disable-next-line sort-imports
+import { dirname, join, parse as fullParse } from 'path';
+import { fileURLToPath, parse } from 'url';
+
+import { build } from './build.js';
+import { connect } from './client.js';
 import {
   // @TODO:
   cookie as _cookie,
-  socket,
-  session,
   // @TODO:
   http as _http,
-} from './config';
-import { connect } from './client';
+  session,
+  socket,
+} from './config.js';
 
 // @ts-ignore
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -75,7 +77,7 @@ const server = createServer((req, res) => {
   // extract URL path
   let pathname = join(__dirname, `../public/${parsedUrl.pathname}`);
   // based on the URL path, extract the file extension. e.g. .js, .doc, ...
-  const { ext } = _parse(pathname);
+  const { ext } = fullParse(pathname);
   // maps file extension to MIME type
   const map = {
     '.ico': 'image/x-icon',
@@ -148,4 +150,4 @@ const server = createServer((req, res) => {
 export default () => {
   server.listen(_http.port);
   console.log(`Server listening on port ${_http.port}`);
-}
+};

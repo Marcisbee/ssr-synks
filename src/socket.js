@@ -1,14 +1,16 @@
 import WebSocket from 'ws';
+
 // import nodeCookie from 'node-cookie';
-import { build } from './build';
-import { socket } from './config';
+import { build } from './build.js';
+import { socket } from './config.js';
 import {
-  unsubscribe,
-  remove,
-  message as _message,
   get,
+  // eslint-disable-next-line sort-imports
+  message as _message,
+  remove,
   subscribe,
-} from './sessionController';
+  unsubscribe,
+} from './sessionController.js';
 
 const wss = new WebSocket.Server({ port: socket.port });
 
@@ -77,4 +79,4 @@ export default () => {
       }
     });
   });
-}
+};

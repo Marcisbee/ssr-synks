@@ -64,6 +64,6 @@ export async function renderComponent(current, context) {
   // Object.assign(current, rendered);
 
   return {
-    ...current
+    ...current,
   };
 }

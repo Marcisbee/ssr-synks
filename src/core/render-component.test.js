@@ -32,7 +32,7 @@ test('returns correct output', async () => {
       3,
     ],
     props: null,
-    type: type,
+    type,
   });
 });
 

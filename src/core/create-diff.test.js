@@ -29,8 +29,12 @@ test('returns fully replaced html node', async () => {
 
 test('returns undefined for deeply equal node', async () => {
   const output = await createDiff(
-    { type: 'div', props: {}, path: [1], children: [1] },
-    { type: 'div', props: {}, path: [1], children: [1] },
+    {
+      type: 'div', props: {}, path: [1], children: [1],
+    },
+    {
+      type: 'div', props: {}, path: [1], children: [1],
+    },
   );
 
   expect(output).toEqual(undefined);

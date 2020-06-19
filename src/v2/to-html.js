@@ -1,4 +1,4 @@
-import { isContext } from './render.js';
+import { isContext } from './utils/is-context.js';
 
 const selfClosingTags = [
   'area',

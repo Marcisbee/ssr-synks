@@ -13,4 +13,4 @@ export function updateProps(current, context) {
       methods[path][key] = value;
     }
   });
-};
+}

@@ -1,8 +1,8 @@
-import { resolve } from 'path';
 import esbuild from 'esbuild';
+import { resolve } from 'path';
 
-import http from './http';
-import socket from './socket';
+import http from './http.js';
+import socket from './socket.js';
 
 (async () => {
   const { default: packageJSON } = await import(resolve('./package.json'));
