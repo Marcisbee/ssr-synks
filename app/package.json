@@ -5,7 +5,7 @@
   "type": "module",
   "main": "index.tsx",
   "scripts": {
-    "start": "ssr"
+    "start": "resync"
   },
   "dependencies": {
     "resync": "file:.."

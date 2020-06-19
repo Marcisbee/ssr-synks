@@ -1,10 +1,10 @@
-import SSR from 'resync';
+import Resync from 'resync';
 
 // import Home from './home';
-import { Test } from './test';
+import { Counter } from './counter';
 
 export default {
-  '/': () => <Test />,
+  '/': () => <Counter />,
   '/about': () => 'About',
   '/users/:userId': ({ userId }) => `Users ${userId}`,
   '404': () => '404 Error',

@@ -11,7 +11,7 @@ export async function buildApp() {
     outfile: './dist/main.js',
     minify: false,
     bundle: true,
-    jsxFactory: 'SSR.h',
+    jsxFactory: 'Resync.h',
     target: 'esnext',
     format: 'esm',
     platform: 'node',

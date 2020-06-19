@@ -1,7 +1,7 @@
-import SSR from 'resync';
+import Resync from 'resync';
 
 import routes from './routes';
-import { Counter } from './test';
+import { CounterContext } from './counter';
 
 function cc(value) {
   if (Array.isArray(value)) {
@@ -37,7 +37,7 @@ class Router {
       return null;
     }
 
-    return SSR.h(route);
+    return Resync.h(route);
   }
 }
 
@@ -57,9 +57,9 @@ function* App() {
           <a href="/users/1">Tom</a>
           <a href="/users/2">Jane</a>
         </div>
-        <Counter>
+        <CounterContext>
           <router.outlet routes={routes} />
-        </Counter>
+        </CounterContext>
       </div>
     );
   }

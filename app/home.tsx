@@ -1,4 +1,4 @@
-import SSR from 'resync';
+import Resync from 'resync';
 
 import { atom, use } from './db';
 
@@ -9,7 +9,7 @@ const countAtom = atom(0);
 const DB = {};
 
 function Counter(props) {
-  const [state, setState] = SSR.useState(0);
+  const [state, setState] = Resync.useState(0);
   const [count, setCount] = use(countAtom, setState);
 
   return (
@@ -28,9 +28,9 @@ function validateUsername(username) {
 }
 
 function Login(props) {
-  const cookie = SSR.useCookie();
-  const [user, setUser] = SSR.useState(DB[cookie]);
-  const [error, setError] = SSR.useState(null);
+  const cookie = Resync.useCookie();
+  const [user, setUser] = Resync.useState(DB[cookie]);
+  const [error, setError] = Resync.useState(null);
 
   function signOut() {
     setUser(DB[cookie] = null);
@@ -71,13 +71,13 @@ function Login(props) {
 }
 
 function Time(props) {
-  const [state, setState] = SSR.useState(0);
+  const [state, setState] = Resync.useState(0);
   setTimeout(setState, 1000, state + 1);
   return [new Date().toLocaleTimeString(), ' : ', state];
 }
 
 function ControlledInput() {
-  const [state, setState] = SSR.useState('');
+  const [state, setState] = Resync.useState('');
 
   return (
     <div>
@@ -94,9 +94,9 @@ function ControlledInput() {
 }
 
 export default function Home(props) {
-  const [state, setState] = SSR.useState(0);
-  const session = SSR.useSession();
-  const cookie = SSR.useCookie();
+  const [state, setState] = Resync.useState(0);
+  const session = Resync.useSession();
+  const cookie = Resync.useCookie();
 
   return (
     <div>

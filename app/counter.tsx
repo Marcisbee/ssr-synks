@@ -1,14 +1,14 @@
-import SSR from 'resync';
+import Resync from 'resync';
 
-export class Counter {
+export class CounterContext {
   count = 0;
   increment = () => {
     this.count += 1;
   };
 }
 
-export function* Test() {
-  const counter = yield Counter;
+export function* Counter() {
+  const counter = yield CounterContext;
 
   while (true) {
     yield (

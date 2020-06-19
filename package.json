@@ -9,7 +9,7 @@
     "node": ">=12.x"
   },
   "bin": {
-    "ssr": "bin/ssr.js"
+    "resync": "bin/resync.js"
   },
   "scripts": {
     "start": "node src/index.js",
