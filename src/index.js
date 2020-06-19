@@ -1,11 +1,9 @@
-import esbuild from 'esbuild';
-import { resolve } from 'path';
-
 import { startHTTP } from './http.js';
 import { buildApp } from './server/build-app.js';
-import socket from './socket.js';
+import { startSocket } from './socket.js';
 
-buildApp(() => {
-  startHTTP();
-  socket();
-});
+buildApp()
+  .then(() => {
+    startHTTP();
+    startSocket();
+  });

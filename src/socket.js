@@ -13,7 +13,7 @@ import {
 
 const wss = new WebSocket.Server({ port: socket.port });
 
-export default () => {
+export function startSocket() {
   wss.on('connection', (ws) => {
     const action = {
       init(data) {
@@ -78,4 +78,4 @@ export default () => {
       }
     });
   });
-};
+}

@@ -1,11 +1,11 @@
 import esbuild from 'esbuild';
 import { resolve } from 'path';
 
-export async function buildApp(callback) {
+export async function buildApp() {
   const { default: packageJSON } = await import(resolve('./package.json'));
   const indexPath = resolve(packageJSON.main);
 
-  esbuild.build({
+  return esbuild.build({
     stdio: 'inherit',
     entryPoints: [indexPath],
     outfile: './dist/main.js',
@@ -17,6 +17,5 @@ export async function buildApp(callback) {
     platform: 'node',
     external: ['ssr-synks'],
   })
-    .then(callback)
     .catch(() => process.exit(1));
 }
