@@ -73,6 +73,7 @@ export function connect(win, doc, helpers, name, port, sessionName) {
 
     // Replace node
     if (typeof node !== 'object') {
+      // @TODO: Figure out how to render html change when target is nodeType 3
       if (target.nodeType === 3) {
         target.textContent = node;
         return;
@@ -86,6 +87,8 @@ export function connect(win, doc, helpers, name, port, sessionName) {
       target.outerHTML = node;
       return;
     }
+
+    // @TODO: Figure out how to remove all other children from container
 
     // Update props & children
     if (node.children && node.props) {

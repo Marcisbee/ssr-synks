@@ -26,7 +26,6 @@ export async function renderGenerator(current, context) {
     rawInstance = await iterable.next();
 
     // @TODO: Clear context actions for this tree before render
-
     current.instance = await render(rawInstance && rawInstance.value, context);
 
     // @TODO: Figure out how to get correct path
