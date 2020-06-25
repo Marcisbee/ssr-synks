@@ -73,7 +73,6 @@ export function connect(win, doc, helpers, name, port, sessionName) {
 
     // Replace node
     if (typeof node !== 'object') {
-      // @TODO: Figure out how to render html change when target is nodeType 3
       if (target.nodeType === 3) {
         target.textContent = node;
         return;
@@ -85,6 +84,22 @@ export function connect(win, doc, helpers, name, port, sessionName) {
       }
 
       target.outerHTML = node;
+      return;
+    }
+
+    if (node.type === null) {
+      const value = node.children.join('');
+
+      if (target.nodeType === 3) {
+        const newNodes = new DOMParser().parseFromString(value, 'text/html').body.childNodes;
+        newNodes.forEach((newNode) => {
+          target.parentElement.insertBefore(newNode, target);
+        });
+        target.remove();
+        return;
+      }
+
+      target.innerHTML = node.children.join('');
       return;
     }
 

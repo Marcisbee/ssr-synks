@@ -44,6 +44,10 @@
       }
     }
 
+    function Abc() {
+      return html`Hello`;
+    }
+
     function* Counter() {
       const counter = yield Context;
 
@@ -53,6 +57,7 @@
           <input value="foo" />
           <button onclick=${() => counter.increment()}>increment</button>
           <${Use1} />
+          ${counter.value % 2 ? html`<${Abc} />` : html`<strong>World</strong>`}
           cool beans
         `;
       }

@@ -3,7 +3,7 @@ import { diffTree } from './diff-tree.js';
 test('returns "" with input null, undefined', async () => {
   const output = await diffTree(null, undefined);
 
-  expect(output).toEqual('');
+  expect(output).toEqual({ children: [''], type: null });
 });
 
 test('returns undefined with same input 1, 1', async () => {
@@ -24,7 +24,58 @@ test('returns fully replaced html node', async () => {
     { type: 'span', props: {}, path: [1] },
   );
 
-  expect(output).toEqual('<div data-sx="1"></div>');
+  expect(output).toEqual({ type: null, children: ['<div data-sx="1"></div>'] });
+});
+
+test('returns component', async () => {
+  const comp = () => { };
+  const output = await diffTree(
+    {
+      type: comp,
+      props: {},
+      children: [
+        {
+          type: comp,
+          props: {},
+          children: [
+            {
+              type: 'strong',
+              props: {},
+              children: [
+                1,
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      type: comp,
+      props: {},
+      children: [
+        {
+          type: comp,
+          props: {},
+          children: [
+            {
+              type: 'strong',
+              props: {},
+              children: [
+                2,
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  );
+
+  expect(output).toEqual({
+    props: {},
+    children: {
+      0: 1,
+    },
+  });
 });
 
 test('returns undefined for deeply equal node', async () => {

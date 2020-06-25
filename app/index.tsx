@@ -26,6 +26,10 @@ function cc(value) {
 class Router {
   path = '/';
 
+  constructor({ initialPath }) {
+    this.path = initialPath;
+  }
+
   navigate(path) {
     this.path = path;
   }
@@ -52,6 +56,14 @@ function* App() {
     active: router.path === '/about',
   };
 
+  function onClick(event) {
+    console.log(event, 'runs on server');
+  }
+
+  onClick.client = function () {
+    console.log(this, 'runs on client');
+  }
+
   while (true) {
     yield (
       <div>
@@ -71,8 +83,10 @@ function* App() {
 
 export default function Index() {
   return (
-    <Router>
-      <App />
-    </Router>
+    <div id="app">
+      <Router initialPath="/">
+        <App />
+      </Router>
+    </div>
   );
 }

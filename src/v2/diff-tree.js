@@ -39,7 +39,10 @@ export async function diffTree(next, previous) {
   }
 
   if (typeof previous === 'undefined' || previous === null) {
-    return toHTML(next);
+    return {
+      type: null,
+      children: [await toHTML(next)],
+    };
   }
 
   if (next instanceof Array) {
@@ -67,7 +70,10 @@ export async function diffTree(next, previous) {
   }
 
   if (next.type !== previous.type) {
-    return toHTML(next);
+    return {
+      type: null,
+      children: [await toHTML(next)],
+    };
   }
 
   // @TODO: Handle this more nicely
@@ -77,6 +83,10 @@ export async function diffTree(next, previous) {
     === JSON.stringify(previous.props);
   if (childrenEqual && propsEqual) {
     return undefined;
+  }
+
+  if (typeof next.type === 'function') {
+    return diffTree(next.children, previous.children);
   }
 
   return {
