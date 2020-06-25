@@ -29,16 +29,6 @@ class Router {
   navigate(path) {
     this.path = path;
   }
-
-  outlet = ({ routes }) => {
-    const route = routes[this.path];
-
-    if (!route) {
-      return null;
-    }
-
-    return Resync.h(route);
-  }
 }
 
 function* RouterOutlet({ routes }) {
