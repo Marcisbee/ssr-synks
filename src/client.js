@@ -116,10 +116,10 @@ export function connect(win, doc, helpers, name, port, sessionName) {
   ws.onopen = () => {
     console.log('[open] Connection established');
 
-    win.__sx = (e) => {
+    win.__sx = (id, e) => {
       ws.send(JSON.stringify([
         'event',
-        e.target.getAttribute('data-sx'),
+        id,
         e.type,
         syntheticEvent(e),
       ]));
