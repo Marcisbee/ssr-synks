@@ -22,10 +22,10 @@ export function* Counter() {
     yield (
       <div>
         <h1>{counter.count}</h1>
-        <button onclick={increment}>+</button>
-        <button onclick={decrement}>-</button>
+        <button class="btn mr-2" onclick={increment}>+</button>
+        <button class="btn mr-2" onclick={decrement}>-</button>
         <br />
-        <button onclick={counter.increment}>+</button>
+        <button class="btn btn-sm" onclick={counter.increment}>+</button>
       </div>
     );
   }

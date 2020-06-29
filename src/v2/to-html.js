@@ -40,23 +40,27 @@ export async function toHTML(current) {
 
   // Render instance if it's defined
   if (typeof instance !== 'undefined') {
-    return toHTML(instance);
+    const name = type.name.toLowerCase();
+    return `<${name} data-sx="${path.join('.')}">${await toHTML(instance)}</${name}>`;
+    // return toHTML(instance);
   }
 
   // If it's context, just render children
   if (isContext(type)) {
-    return toHTML(children);
+    const name = type.name.toLowerCase();
+    return `<${name}>${await toHTML(children)}</${name}>`;
+    // return toHTML(children);
   }
 
   const childNodes = children ? await toHTML(children) : '';
 
   const attributes = Object.entries({
     ...props,
-    'data-sx': path.join('.'),
+    // 'data-sx': path.join('.'),
     // 'data-sx': pathCompress(path.join('.')),
   }).map(([key, value]) => {
     const normalValue = value instanceof Function
-      ? '__sx(event)'
+      ? `__sx('${path.join('.')}', event)`
       : value;
     return `${key}=${JSON.stringify(String(normalValue))}`;
   }).join(' ');

@@ -29,14 +29,7 @@ export async function renderGenerator(current, context) {
     current.instance = await render(rawInstance && rawInstance.value, context);
 
     // @TODO: Figure out how to get correct path
-    console.log(
-      1,
-      current.instance,
-    );
-    // console.log(
-    //   2,
-    // );
-    context.onUpdate(current.instance.path, current.instance, previousInstance);
+    context.onUpdate(current.path, current.instance, previousInstance);
   };
 
   while (isContext(rawInstance.value)) {

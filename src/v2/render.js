@@ -26,6 +26,7 @@ export async function render(current, context) {
     throw new Error(`Context "${current.constructor.name}" instance used in view layer`);
   }
 
+  context.path.push(context.index);
   current.path = context.path;
 
   if (isContext(current.type)) {
@@ -39,9 +40,6 @@ export async function render(current, context) {
   if (isComponent(current.type)) {
     return renderComponent(current, context);
   }
-
-  context.path.push(context.index);
-  current.path = context.path;
 
   parseProps(current, context);
 
