@@ -24,7 +24,7 @@ test('returns fully replaced html node', async () => {
     { type: 'span', props: {}, path: [1] },
   );
 
-  expect(output).toEqual({ type: null, children: ['<div data-sx="1"></div>'] });
+  expect(output).toEqual({ type: null, children: ['<div ></div>'] });
 });
 
 test('returns component', async () => {
@@ -71,9 +71,13 @@ test('returns component', async () => {
   );
 
   expect(output).toEqual({
-    props: {},
-    children: {
-      0: 1,
+    0: {
+      0: {
+        props: {},
+        children: {
+          0: 1,
+        },
+      },
     },
   });
 });
