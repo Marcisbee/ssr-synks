@@ -44,7 +44,7 @@ function* RouterOutlet({ routes }) {
     if (!route) {
       yield null;
     } else {
-      yield Resync.h(route);
+      yield route({});
     }
   }
 }

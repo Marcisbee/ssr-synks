@@ -59,6 +59,13 @@ export function connect(win, doc, helpers, name, port, sessionName) {
     });
   }
 
+  const placeholder = document.createElement('div');
+  function getNodesFromHTML(html) {
+    placeholder.innerHTML = html;
+
+    return Array.from(placeholder.childNodes);
+  }
+
   function patchDiff(node, target, isParent) {
     // No difference
     if (typeof node === 'undefined') {
@@ -87,23 +94,13 @@ export function connect(win, doc, helpers, name, port, sessionName) {
       return;
     }
 
-    if (node.type === null) {
-      const value = node.children.join('');
+    // @TODO: Figure out how to remove all other children from container
 
-      if (target.nodeType === 3) {
-        const newNodes = new DOMParser().parseFromString(value, 'text/html').body.childNodes;
-        newNodes.forEach((newNode) => {
-          target.parentElement.insertBefore(newNode, target);
-        });
-        target.remove();
-        return;
-      }
-
-      target.innerHTML = node.children.join('');
+    // It's a context or component
+    if (node.type === 2) {
+      patchDiff(node.children, target);
       return;
     }
-
-    // @TODO: Figure out how to remove all other children from container
 
     // Update props & children
     if (node.children && node.props) {
@@ -118,6 +115,15 @@ export function connect(win, doc, helpers, name, port, sessionName) {
       const value = node[key];
 
       if (currentLength <= key) {
+        if (target.nodeType === 3) {
+          const nodes = getNodesFromHTML(value.children);
+          nodes.forEach((child) => {
+            target.parentElement.insertBefore(child, target);
+          });
+          target.remove();
+          return;
+        }
+
         target.insertAdjacentHTML('beforeend', value);
         return;
       }

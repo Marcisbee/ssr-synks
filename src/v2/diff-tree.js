@@ -40,8 +40,8 @@ export async function diffTree(next, previous) {
 
   if (typeof previous === 'undefined' || previous === null) {
     return {
-      type: null,
-      children: [await toHTML(next)],
+      type: 1,
+      children: await toHTML(next),
     };
   }
 
@@ -58,7 +58,7 @@ export async function diffTree(next, previous) {
   }
 
   if (typeof next === 'undefined' || next === null) {
-    return null;
+    return undefined;
   }
 
   if (typeof next !== 'object') {
@@ -66,13 +66,16 @@ export async function diffTree(next, previous) {
   }
 
   if (typeof next.instance !== 'undefined') {
-    return diffTree(next.instance, previous.instance);
+    return {
+      type: 2,
+      children: [].concat(await diffTree(next.instance, previous.instance)),
+    };
   }
 
   if (next.type !== previous.type) {
     return {
-      type: null,
-      children: [await toHTML(next)],
+      type: 1,
+      children: await toHTML(next),
     };
   }
 
@@ -86,7 +89,10 @@ export async function diffTree(next, previous) {
   }
 
   if (typeof next.type === 'function') {
-    return diffTree(next.children, previous.children);
+    return {
+      type: 2,
+      children: [].concat(await diffTree(next.children, previous.children)),
+    };
   }
 
   return {
