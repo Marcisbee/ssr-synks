@@ -24,6 +24,10 @@ export function startSocket() {
         );
       },
       update(path, data) {
+        if (typeof data === 'undefined') {
+          return;
+        }
+
         ws.send(
           JSON.stringify(
             ['update', path, data],

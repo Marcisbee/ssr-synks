@@ -94,8 +94,6 @@ export function connect(win, doc, helpers, name, port, sessionName) {
       return;
     }
 
-    // @TODO: Figure out how to remove all other children from container
-
     // It's a context or component
     if (node.type === 2) {
       patchDiff(node.children, target);
@@ -116,7 +114,9 @@ export function connect(win, doc, helpers, name, port, sessionName) {
 
       if (currentLength <= key) {
         if (target.nodeType === 3) {
-          const nodes = getNodesFromHTML(value.children);
+          const normalValue = value && value.type === 1 ? value.children : value;
+          const nodes = getNodesFromHTML(normalValue);
+
           nodes.forEach((child) => {
             target.parentElement.insertBefore(child, target);
           });
