@@ -1,12 +1,12 @@
 import { resolve } from 'path';
 
+import { diffTree } from './core/diff-tree.js';
+import { h } from './core/h.js';
+import { mount } from './core/mount.js';
+import { toHTML } from './core/to-html.js';
 // import { pathCompress } from './core/path-compress.js';
 // import { pathDecompress } from './core/path-decompress.js';
 import * as sessionController from './sessionController.js';
-import { diffTree } from './v2/diff-tree.js';
-import { h } from './v2/h.js';
-import { mount } from './v2/mount.js';
-import { toHTML } from './v2/to-html.js';
 
 /**
  * @param {{ props?: Record<string, any> }} options

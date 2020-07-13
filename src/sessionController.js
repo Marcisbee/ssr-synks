@@ -1,4 +1,4 @@
-import { unsubscribeTree } from './v2/unsubscribe-tree.js';
+import { unsubscribeTree } from './core/unsubscribe-tree.js';
 
 const sessions = {};
 
