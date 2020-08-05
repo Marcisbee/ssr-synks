@@ -3,7 +3,7 @@ import { diffTree } from './diff-tree.js';
 test('returns "" with input null, undefined', async () => {
   const output = await diffTree(null, undefined);
 
-  expect(output).toEqual({ children: [''], type: null });
+  expect(output).toEqual({ children: '', type: 1 });
 });
 
 test('returns undefined with same input 1, 1', async () => {
@@ -24,7 +24,7 @@ test('returns fully replaced html node', async () => {
     { type: 'span', props: {}, path: [1] },
   );
 
-  expect(output).toEqual({ type: null, children: ['<div ></div>'] });
+  expect(output).toEqual({ type: 1, children: '<div ></div>' });
 });
 
 test('returns component', async () => {
@@ -71,14 +71,24 @@ test('returns component', async () => {
   );
 
   expect(output).toEqual({
-    0: {
-      0: {
-        props: {},
-        children: {
-          0: 1,
-        },
-      },
-    },
+    type: 2,
+    children: [
+      {
+        0: {
+          type: 2,
+          children: [
+            {
+              0: {
+                props: {},
+                children: {
+                  0: 1,
+                },
+              },
+            },
+          ]
+        }
+      }
+    ],
   });
 });
 
