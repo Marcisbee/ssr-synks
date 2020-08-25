@@ -15,6 +15,7 @@
     "start": "node src/index.js",
     "dev": "npm start --prefix ./app",
     "test": "node node_modules/jest/bin/jest.js",
+    "uvu": "uvu src/v3",
     "lint": "eslint ./src"
   },
   "repository": {
@@ -39,7 +40,8 @@
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-simple-import-sort": "^5.0.3",
-    "jest": "^26.0.1"
+    "jest": "^26.0.1",
+    "uvu": "^0.4.0-next.3"
   },
   "babel": {
     "presets": [
