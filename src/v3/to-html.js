@@ -38,12 +38,10 @@ export function toHTML(current) {
   }
 
   if (current instanceof ComponentVnode) {
-    // if (typeof instance !== 'undefined') {
-    //   const name = type.name.toLowerCase();
-    //   return `<${name} data-sx="${id.join('.')}">${toHTML(instance)}</${name}>`;
-    //   // return toHTML(instance);
-    // }
-    return '<span style="color: red;">[COMPONENTS NOT IMPLEMENTED YET]</span>';
+    const name = current.type.name.toLowerCase();
+    const children = toHTML(current.instance);
+
+    return `<${name} data-sx="${current.id.join('.')}">${children}</${name}>`;
   }
 
   if (!(current instanceof ElementVnode)) {
@@ -67,16 +65,15 @@ export function toHTML(current) {
 
   const childNodes = children ? toHTML(children) : '';
 
-  const attributes = Object.entries({
-    ...props,
-    // 'data-sx': id.join('.'),
-    // 'data-sx': pathCompress(id.join('.')),
-  }).map(([key, value]) => {
-    const normalValue = value instanceof Function
-      ? `__sx('${id.join('.')}', event)`
-      : value;
-    return `${key}=${JSON.stringify(String(normalValue))}`;
-  });
+  const attributes = Object.entries(props)
+    .map(([key, originalValue]) => {
+      const normalValue = originalValue instanceof Function
+        ? `__sx('${id.join('.')}', event)`
+        : originalValue;
+      const value = JSON.stringify(String(normalValue));
+
+      return `${key}=${value}`;
+    });
 
   // To avoid awkward space between tag and ending of tag when there are no attributes
   const tagHead = [type].concat(attributes).join(' ');

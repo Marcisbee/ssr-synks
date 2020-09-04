@@ -12,7 +12,10 @@ export function render(nodeRaw, id = [0]) {
       (child, index) => render(child, id.concat(index)),
     );
 
-    node.instance = node.type.call({}, { ...node.props, children: node.children });
+    node.instance = render(
+      node.type.call({}, { ...node.props, children: node.children }),
+      id.concat(0),
+    );
 
     return node;
   }

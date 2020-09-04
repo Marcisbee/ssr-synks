@@ -32,9 +32,9 @@ export function diff(nodeBefore, nodeAfter) {
       );
     }
 
-    // @TODO: Render component here
-
-    return changes;
+    return changes.concat(
+      diff(nodeAfter.instance, nodeBefore.instance),
+    );
   }
 
   if (nodeBefore instanceof ElementVnode && nodeAfter instanceof ElementVnode) {
