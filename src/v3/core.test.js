@@ -2,7 +2,10 @@ import { suite } from 'uvu';
 // eslint-disable-next-line import/extensions
 import * as assert from 'uvu/assert';
 
-import { diff, h, render } from './index.js';
+import { diff } from './diff.js';
+import Resync from './index.js';
+
+const { h, render } = Resync;
 
 const test = suite('Diff');
 
