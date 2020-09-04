@@ -65,7 +65,7 @@ export function toHTML(current) {
 
   const childNodes = children ? toHTML(children) : '';
 
-  const attributes = Object.entries(props)
+  const attributes = Object.entries(props || {})
     .map(([key, originalValue]) => {
       const normalValue = originalValue instanceof Function
         ? `__sx('${id.join('.')}', event)`

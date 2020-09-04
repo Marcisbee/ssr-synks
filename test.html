@@ -16,37 +16,11 @@
   <script src="https://unpkg.com/htm@2.2.1/dist/htm.js" crossorigin></script>
   <script type="module">
     import Resync from '/src/v3/index.js';
-    import { mount } from '/src/core/mount.js';
+    import { mount } from '/src/v3/mount.js';
     import { toHTML } from '/src/v3/to-html.js';
     import { diff } from '/src/v3/diff.js';
     const { h, render } = Resync;
     const html = htm.bind(h);
-
-    function Component() {
-      return h('button', { onClick: () => {}, disabled: true }, 1, 2, Math.random());
-    }
-
-    const tree1 = h('div', { class: 'foo', id: 'pop' }, 'Hello world', h(Component));
-    const tree3 = h('div', { class: 'foo', id: 'pop' }, 'Hello world', h(Component));
-
-    const tree2 = h('div', { class: 'bar', id: 'pop' }, 'Hello moon', h('span', {}, 1, 2, 4));
-
-    const render1 = render(tree1);
-    const render2 = render(tree2);
-
-    console.log({ html: toHTML(render1), render1, render2 });
-
-    app.innerHTML = toHTML(render1);
-
-    console.log(diff(render1, render2));
-
-    console.log(diff(render(1), render(2)));
-
-    console.log(diff(render(tree1), render(tree3)));
-
-    console.log(diff(render(1), render(1)));
-
-    throw 'Stop'
 
     class Context {
       value = 0;
@@ -92,55 +66,70 @@
       }
     }
 
-    function* App() {
+    // function* App() {
+    //   return html`
+    //     <div>
+    //       <${Context}>
+    //         <${Context2}>
+    //           <${Counter} />
+    //           <br />
+    //         <//>
+    //       <//>
+    //     </div>
+    //   `;
+    // }
+
+    function Child() {
+      return html`
+        <p onclick=${() => {}}>${new Date().toISOString()}</p>
+      `;
+    }
+
+    function App() {
       return html`
         <div>
-          <${Context}>
-            <${Context2}>
-              <${Counter} />
-              <br />
-            <//>
-          <//>
+          <h1>Hello world</h1>
+          <${Child} />
         </div>
       `;
     }
 
-    (async () => {
-      async function onUpdate(path, next, previous) {
-        const difference = diff(next, previous);
-        console.log('UPDATE HAPPENING...', {
-          path,
-          next,
-          previous,
-          difference,
-        });
-      }
+    function onUpdate(path, next, previous) {
+      const difference = diff(next, previous);
+      console.log('UPDATE HAPPENING...', {
+        path,
+        next,
+        previous,
+        difference,
+      });
+    }
 
-      const output = await mount(h(App), onUpdate);
+    const output = mount(h(App), onUpdate);
 
-      const onClick = output.actions['0.0.0.0.0.2'].onclick;
-      const onClick2 = output.actions['0.0.0.0.0.3.3'].onclick;
+    const onClick = output.actions['0.0.1.0'].onclick;
 
-      console.log(output);
+    // const onClick = output.actions['0.0.0.0.0.2'].onclick;
+    // const onClick2 = output.actions['0.0.0.0.0.3.3'].onclick;
 
-      const html = await toHTML(output.tree);
-      app.innerHTML = html;
-      console.log(html);
+    console.log(output);
 
-      window.press = () => {
-        onClick();
-        setTimeout(async () => {
-          app.innerHTML = await toHTML(output.tree);
-        });
-      }
+    const htmlOutput = toHTML(output.tree);
+    app.innerHTML = htmlOutput;
+    console.log(htmlOutput);
 
-      window.press2 = () => {
-        onClick2();
-        setTimeout(async () => {
-          app.innerHTML = await toHTML(output.tree);
-        });
-      }
-    })();
+    window.press = () => {
+      onClick();
+      setTimeout(async () => {
+        app.innerHTML = toHTML(output.tree);
+      });
+    }
+
+    window.press2 = () => {
+      onClick2();
+      setTimeout(async () => {
+        app.innerHTML = toHTML(output.tree);
+      });
+    }
   </script>
 </body>
 
