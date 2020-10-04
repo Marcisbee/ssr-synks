@@ -9,37 +9,57 @@ export function render(nodeRaw, id = [0], context) {
 
   node.id = id;
 
+  // @TODO: Replace output functions with paths
   if (node instanceof GeneratorVnode) {
-    node.children = node.children.map(
-      (child, index) => render(child, id.concat(index), context),
-    );
+    // eslint-disable-next-line no-inner-declarations
+    function selfRender() {
+      node.children = node.children.map(
+        (child, index) => render(child, id.concat(index), context),
+      );
 
-    node.iterable = node.type({ ...node.props, children: node.children });
-    let instance = node.iterable.next();
+      // node.iterable = node.type({ ...node.props, children: node.children });
+      node.iterable = node.type.call(
+        {
+          update() {
+            const previousInstance = node.instance;
 
-    // @TODO: Handle multiple contexts
-    // while (isContext(rawInstance.value)) {
-    //   const contestName = rawInstance.value.name;
-    //   const currentContext = context.instances[contestName];
+            // Render component
+            selfRender();
 
-    //   if (typeof currentContext === 'undefined') {
-    //     throw new Error(`Trying to access "${contestName}" in <${current.type.name}> component, but it was not defined in parent tree`);
-    //   }
+            context.onUpdate(node.id, node.instance, previousInstance);
+          },
+        },
+        { ...node.props, children: node.children },
+      );
+      let instance = node.iterable.next();
 
-    //   const [contextInstance, subscribe] = context.instances[contestName];
+      // @TODO: Handle multiple contexts
+      // while (isContext(rawInstance.value)) {
+      //   const contestName = rawInstance.value.name;
+      //   const currentContext = context.instances[contestName];
 
-    //   current.subscribed.push(
-    //     subscribe(update),
-    //   );
+      //   if (typeof currentContext === 'undefined') {
+      //     throw new Error(`Trying to access "${contestName}" in <${current.type.name}> component, but it was not defined in parent tree`);
+      //   }
 
-    //   rawInstance = await iterable.next(contextInstance);
-    // }
+      //   const [contextInstance, subscribe] = context.instances[contestName];
 
-    node.instance = render(
-      instance.value,
-      id.concat(0),
-      context,
-    );
+      //   current.subscribed.push(
+      //     subscribe(update),
+      //   );
+
+      //   rawInstance = await iterable.next(contextInstance);
+      // }
+
+      node.instance = render(
+        instance.value,
+        id.concat(0),
+        context,
+      );
+    }
+
+    // Render component
+    selfRender();
 
     return node;
   }

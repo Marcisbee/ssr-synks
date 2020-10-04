@@ -58,7 +58,10 @@
         yield html`
           <h1>[${counter.value}] 123 ${[null, true, [1, 2], 3, null]}<i>b</i></h1>
           <input value="foo" />
-          <button onclick=${() => counter.increment()}>increment</button>
+          <button onclick=${() => {
+            console.log('asd');
+            counter.increment();
+          }}>increment</button>
           <${Use1} />
           ${counter.value % 2 ? html`<${Abc} />` : html`<strong>World</strong>`}
           cool beans
@@ -80,8 +83,12 @@
     // }
 
     function* Child() {
+      const update = this.update;
       return html`
-        <p onclick=${() => {}}>${new Date().toISOString()}</p>
+        <p onclick=${() => {
+          console.log('happens');
+          update();
+        }}>${new Date().toISOString()}</p>
       `;
     }
 
