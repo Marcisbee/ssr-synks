@@ -69,39 +69,39 @@
       }
     }
 
-    // function* App() {
-    //   return html`
-    //     <div>
-    //       <${Context}>
-    //         <${Context2}>
-    //           <${Counter} />
-    //           <br />
-    //         <//>
-    //       <//>
-    //     </div>
-    //   `;
-    // }
-
-    function* Child() {
-      const update = this.update;
+    function* App() {
       return html`
-        <p onclick=${() => {
-          console.log('happens');
-          update();
-        }}>${new Date().toISOString()}</p>
+        <div>
+          <${Context}>
+            <${Context2}>
+              <${Counter} />
+              <br />
+            <//>
+          <//>
+        </div>
       `;
     }
 
-    function* App() {
-      while (true) {
-        yield html`
-          <div>
-            <h1>Hello world</h1>
-            <${Child} />
-          </div>
-        `;
-      }
-    }
+    // function* Child() {
+    //   const update = this.update;
+    //   return html`
+    //     <p onclick=${() => {
+    //       console.log('happens');
+    //       update();
+    //     }}>${new Date().toISOString()}</p>
+    //   `;
+    // }
+
+    // function* App() {
+    //   while (true) {
+    //     yield html`
+    //       <div>
+    //         <h1>Hello world</h1>
+    //         <${Child} />
+    //       </div>
+    //     `;
+    //   }
+    // }
 
     function onUpdate(path, next, previous) {
       const difference = diff(next, previous);

@@ -1,6 +1,7 @@
 import { ComponentVnode } from './nodes/component.js';
 import { ElementVnode } from './nodes/element.js';
 import { GeneratorVnode } from './nodes/generator.js';
+import { isContext } from './utils/is-context.js';
 import { parseProps } from './utils/parse-props.js';
 import { transformPrimitives } from './utils/transform-primitives.js';
 
@@ -17,21 +18,38 @@ export function render(nodeRaw, id = [0], context) {
         (child, index) => render(child, id.concat(index), context),
       );
 
+      function update() {
+        const previousInstance = node.instance;
+
+        // Render component
+        selfRender();
+
+        context.onUpdate(node.id, node.instance, previousInstance);
+      }
+
       // node.iterable = node.type({ ...node.props, children: node.children });
       node.iterable = node.type.call(
-        {
-          update() {
-            const previousInstance = node.instance;
-
-            // Render component
-            selfRender();
-
-            context.onUpdate(node.id, node.instance, previousInstance);
-          },
-        },
+        { update },
         { ...node.props, children: node.children },
       );
       let instance = node.iterable.next();
+
+      while (isContext(instance.value)) {
+        const contextName = instance.value.name;
+        const currentContext = context.instances[contextName];
+
+        if (typeof currentContext === 'undefined') {
+          throw new Error(`Trying to access "${contextName}" in <${node.type.name}> component, but it was not defined in parent tree`);
+        }
+
+        console.log({
+          instance: instance.value,
+          contextName,
+          currentContext,
+        });
+
+        instance = node.iterable.next();
+      }
 
       // @TODO: Handle multiple contexts
       // while (isContext(rawInstance.value)) {
