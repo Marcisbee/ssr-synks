@@ -48,6 +48,16 @@ function renderContext(node, id, context) {
 }
 
 export function render(nodeRaw, id = [0], context) {
+  if (Array.isArray(nodeRaw)) {
+    return nodeRaw.map((node) => (
+      render(node, id, context)
+    ));
+  }
+
+  if (nodeRaw === null) {
+    return null;
+  }
+
   const node = transformPrimitives(nodeRaw);
 
   node.id = id;
