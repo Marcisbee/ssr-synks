@@ -2,6 +2,7 @@ import { ComponentVnode } from './nodes/component.js';
 import { ElementVnode } from './nodes/element.js';
 import { PatchVnode } from './nodes/patch.js';
 import { TextVnode } from './nodes/text.js';
+import { toHTML } from './to-html.js';
 
 const TEXT = 0;
 const NODE = 1;
@@ -10,9 +11,20 @@ const INSERT = 3;
 const REMOVE = 4;
 
 export function diff(nodeBefore, nodeAfter) {
+  // Handle arrays
+  if (Array.isArray(nodeBefore)) {
+    return nodeBefore.reduce((acc, node, i) => (
+      acc.concat(diff(node, nodeAfter[i]))
+    ), []);
+  }
+
   const changes = [];
 
   changes.vnode = nodeAfter;
+
+  if (nodeBefore === nodeAfter) {
+    return changes;
+  }
 
   if (nodeBefore instanceof TextVnode && nodeAfter instanceof TextVnode) {
     if (nodeBefore.value !== nodeAfter.value) {
@@ -28,7 +40,7 @@ export function diff(nodeBefore, nodeAfter) {
     if (nodeBefore.type !== nodeAfter.type) {
       return changes.concat(
         new PatchVnode(REMOVE, nodeBefore),
-        new PatchVnode(INSERT, nodeAfter, nodeAfter),
+        new PatchVnode(INSERT, nodeAfter, toHTML(nodeAfter)),
       );
     }
 
@@ -41,7 +53,7 @@ export function diff(nodeBefore, nodeAfter) {
     if (nodeBefore.type !== nodeAfter.type) {
       return changes.concat(
         new PatchVnode(REMOVE, nodeBefore),
-        new PatchVnode(INSERT, nodeAfter, nodeAfter),
+        new PatchVnode(INSERT, nodeAfter, toHTML(nodeAfter)),
       );
     }
 
@@ -64,8 +76,8 @@ export function diff(nodeBefore, nodeAfter) {
     // Iterate props
     const propsKeys = Array.from(
       new Set(
-        Object.keys(nodeBefore.props)
-          .concat(Object.keys(nodeAfter.props)),
+        Object.keys(nodeBefore.props || {})
+          .concat(Object.keys(nodeAfter.props || {})),
       ),
     );
     const propsDiff = propsKeys.reduce(
@@ -109,7 +121,7 @@ export function diff(nodeBefore, nodeAfter) {
   if (nodeBefore.constructor.name !== nodeAfter.constructor.name) {
     return changes.concat(
       new PatchVnode(REMOVE, nodeBefore),
-      new PatchVnode(INSERT, nodeAfter, nodeAfter),
+      new PatchVnode(INSERT, nodeAfter, toHTML(nodeAfter)),
     );
   }
 

@@ -6,5 +6,15 @@ export class GeneratorVnode extends ComponentVnode {
 
     this.iterable = null;
     this.subscribed = [];
+    this.isUnsubscribed = false;
+  }
+
+  unsubscribe() {
+    if (this.subscribed) {
+      this.isUnsubscribed = true;
+      this.subscribed.slice().forEach((unsubscribe) => unsubscribe());
+    }
+
+    super.unsubscribe();
   }
 }

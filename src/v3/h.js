@@ -4,7 +4,7 @@ import { GeneratorVnode } from './nodes/generator.js';
 import { mergePrimitives } from './utils/merge-primitives.js';
 import { transformPrimitives } from './utils/transform-primitives.js';
 
-export function h(type, props = null, ...childrenRaw) {
+export function h(type, props = {}, ...childrenRaw) {
   const children = childrenRaw
     .flat()
     .reduce(mergePrimitives, [])

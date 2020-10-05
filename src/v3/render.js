@@ -3,6 +3,7 @@ import { ElementVnode } from './nodes/element.js';
 import { GeneratorVnode } from './nodes/generator.js';
 import { createProxy } from './utils/create-proxy.js';
 import { isContext } from './utils/is-context.js';
+import { mergePrimitives } from './utils/merge-primitives.js';
 import { parseProps } from './utils/parse-props.js';
 import { transformPrimitives } from './utils/transform-primitives.js';
 
@@ -34,28 +35,50 @@ function renderContext(node, id, context) {
     },
   ];
 
-  context.instances = {
-    ...context.instances,
-    [name]: instance,
+  const newContext = {
+    ...context,
+    instances: {
+      ...context.instances,
+      [name]: instance,
+    },
   };
 
   node.children = node.children.map(
     // eslint-disable-next-line no-use-before-define
-    (child, index) => render(child, id.concat(index), context),
+    (child, index) => render(child, id.concat(index), newContext),
   );
 
   return node;
 }
 
-export function render(nodeRaw, id = [0], context) {
-  if (Array.isArray(nodeRaw)) {
-    return nodeRaw.map((node) => (
-      render(node, id, context)
-    ));
+function renderArray(currentArray, id, context) {
+  let output = [];
+  const [originalLength] = id.slice(-1);
+  let length = originalLength;
+
+  for (const i in currentArray) {
+    const newContext = {
+      ...context,
+      index: length,
+    };
+    // eslint-disable-next-line no-use-before-define
+    const result = render(currentArray[i], id.concat(length), newContext);
+
+    output = mergePrimitives(output, result);
+
+    length = originalLength + output.length;
   }
 
-  if (nodeRaw === null) {
-    return null;
+  return output;
+}
+
+export function render(nodeRaw, id = [0], context) {
+  if (nodeRaw instanceof Array) {
+    return renderArray(nodeRaw, id, context);
+  }
+
+  if (nodeRaw === undefined || nodeRaw === null || typeof nodeRaw !== 'object') {
+    return nodeRaw;
   }
 
   const node = transformPrimitives(nodeRaw);
@@ -75,11 +98,27 @@ export function render(nodeRaw, id = [0], context) {
       );
 
       function update() {
+        // Tree is unsubscribed, no need to update this
+        if (node.isUnsubscribed) {
+          return;
+        }
+
         const previousInstance = node.instance;
+
+        if (previousInstance instanceof Array) {
+          previousInstance.forEach((instance) => {
+            if (!instance || !instance.unsubscribe) return;
+
+            instance.unsubscribe();
+          });
+        } else if (previousInstance) {
+          previousInstance.unsubscribe();
+        }
 
         // Render component
         selfRender();
 
+        debugger
         context.onUpdate(node.id, node.instance, previousInstance);
       }
 
@@ -100,9 +139,12 @@ export function render(nodeRaw, id = [0], context) {
 
         const [contextInstance, subscribe] = context.instances[contextName];
 
-        node.subscribed.push(
-          subscribe(update),
-        );
+        // Do not subscribe to contexts again
+        if (!node.instance) {
+          node.subscribed.push(
+            subscribe(update),
+          );
+        }
 
         instance = node.iterable.next(contextInstance);
       }
@@ -153,9 +195,7 @@ export function render(nodeRaw, id = [0], context) {
   }
 
   if (node instanceof ElementVnode) {
-    node.children = node.children.map(
-      (child, index) => render(child, id.concat(index), context),
-    );
+    node.children = renderArray(node.children, id, context);
 
     parseProps(node, context);
 
