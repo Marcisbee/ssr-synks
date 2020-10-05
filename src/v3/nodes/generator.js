@@ -5,5 +5,6 @@ export class GeneratorVnode extends ComponentVnode {
     super(type, props, children);
 
     this.iterable = null;
+    this.subscribed = [];
   }
 }

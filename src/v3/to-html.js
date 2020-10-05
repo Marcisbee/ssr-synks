@@ -1,7 +1,7 @@
 import { ComponentVnode } from './nodes/component.js';
 import { ElementVnode } from './nodes/element.js';
 import { TextVnode } from './nodes/text.js';
-// import { isContext } from './utils/is-context.js';
+import { isContext } from './utils/is-context.js';
 
 const selfClosingTags = [
   'area',
@@ -37,6 +37,12 @@ export function toHTML(current) {
     return current.value;
   }
 
+  // If it's context, just render children
+  if (isContext(current.type)) {
+    const name = current.type.name.toLowerCase();
+    return `<${name}>${toHTML(current.children)}</${name}>`;
+  }
+
   if (current instanceof ComponentVnode) {
     const name = current.type.name.toLowerCase();
     const children = toHTML(current.instance);
@@ -55,13 +61,6 @@ export function toHTML(current) {
     type,
     children,
   } = current;
-
-  // If it's context, just render children
-  // if (isContext(type)) {
-  //   const name = type.name.toLowerCase();
-  //   return `<${name}>${toHTML(children)}</${name}>`;
-  //   // return toHTML(children);
-  // }
 
   const childNodes = children ? toHTML(children) : '';
 

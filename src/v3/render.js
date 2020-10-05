@@ -1,14 +1,60 @@
 import { ComponentVnode } from './nodes/component.js';
 import { ElementVnode } from './nodes/element.js';
 import { GeneratorVnode } from './nodes/generator.js';
+import { createProxy } from './utils/create-proxy.js';
 import { isContext } from './utils/is-context.js';
 import { parseProps } from './utils/parse-props.js';
 import { transformPrimitives } from './utils/transform-primitives.js';
+
+function renderContext(node, id, context) {
+  const { name } = node.type;
+  let subscribers = [];
+
+  const contextInstance = new node.type(node.props);
+
+  // contextInstance[CONTEXT_INSTANCE] = true;
+
+  const proxyInstance = createProxy(contextInstance, async () => {
+    for (const subscriber of subscribers) {
+      await subscriber();
+    }
+  });
+
+  const instance = [
+    proxyInstance,
+
+    // Subscribe
+    (fn) => {
+      subscribers.push(fn);
+
+      // Unsubscribe
+      return () => {
+        subscribers = subscribers.filter((subscriber) => subscriber !== fn);
+      };
+    },
+  ];
+
+  context.instances = {
+    ...context.instances,
+    [name]: instance,
+  };
+
+  node.children = node.children.map(
+    // eslint-disable-next-line no-use-before-define
+    (child, index) => render(child, id.concat(index), context),
+  );
+
+  return node;
+}
 
 export function render(nodeRaw, id = [0], context) {
   const node = transformPrimitives(nodeRaw);
 
   node.id = id;
+
+  if (isContext(node.type)) {
+    return renderContext(node, id, context);
+  }
 
   // @TODO: Replace output functions with paths
   if (node instanceof GeneratorVnode) {
@@ -27,11 +73,11 @@ export function render(nodeRaw, id = [0], context) {
         context.onUpdate(node.id, node.instance, previousInstance);
       }
 
-      // node.iterable = node.type({ ...node.props, children: node.children });
-      node.iterable = node.type.call(
-        { update },
-        { ...node.props, children: node.children },
-      );
+      node.iterable = node.type({ ...node.props, children: node.children });
+      // node.iterable = node.type.call(
+      //   { update },
+      //   { ...node.props, children: node.children },
+      // );
       let instance = node.iterable.next();
 
       while (isContext(instance.value)) {
@@ -42,13 +88,13 @@ export function render(nodeRaw, id = [0], context) {
           throw new Error(`Trying to access "${contextName}" in <${node.type.name}> component, but it was not defined in parent tree`);
         }
 
-        console.log({
-          instance: instance.value,
-          contextName,
-          currentContext,
-        });
+        const [contextInstance, subscribe] = context.instances[contextName];
 
-        instance = node.iterable.next();
+        node.subscribed.push(
+          subscribe(update),
+        );
+
+        instance = node.iterable.next(contextInstance);
       }
 
       // @TODO: Handle multiple contexts
