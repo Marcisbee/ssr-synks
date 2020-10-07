@@ -104,7 +104,7 @@
     // }
 
     function onUpdate(path, next, previous) {
-      const difference = diff(next, previous);
+      const difference = diff(previous, next);
       console.log('UPDATE HAPPENING...', {
         path,
         next,

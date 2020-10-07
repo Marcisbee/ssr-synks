@@ -16,7 +16,21 @@ function renderContext(node, id, context) {
   // contextInstance[CONTEXT_INSTANCE] = true;
 
   const proxyInstance = createProxy(contextInstance, async () => {
-    for (const subscriber of subscribers) {
+    const subs = subscribers.slice();
+    subscribers = [];
+
+    const solvedSubscribers = [];
+
+    for (const subscriber of subs) {
+      const isSolved = solvedSubscribers
+        .findIndex((subscriberId) => (
+          new RegExp(`^${subscriberId}\\.`).test(subscriber.id.join('.'))
+        )) !== -1;
+
+      // eslint-disable-next-line no-continue
+      if (isSolved) continue;
+
+      solvedSubscribers.push(subscriber.id.join('.'));
       await subscriber();
     }
   });
@@ -25,13 +39,8 @@ function renderContext(node, id, context) {
     proxyInstance,
 
     // Subscribe
-    (fn) => {
-      subscribers.push(fn);
-
-      // Unsubscribe
-      return () => {
-        subscribers = subscribers.filter((subscriber) => subscriber !== fn);
-      };
+    (update) => {
+      subscribers.push(update);
     },
   ];
 
@@ -92,41 +101,21 @@ export function render(nodeRaw, id = [0], context) {
   // @TODO: Replace output functions with paths
   if (node instanceof GeneratorVnode) {
     // eslint-disable-next-line no-inner-declarations
+    function update() {
+      const previousInstance = node.instance;
+
+      // Render component
+      // eslint-disable-next-line no-use-before-define
+      selfRender();
+
+      context.onUpdate(node.id, node.instance, previousInstance);
+    }
+
+    update.id = node.id;
+
+    // eslint-disable-next-line no-inner-declarations
     function selfRender() {
-      node.children = node.children.map(
-        (child, index) => render(child, id.concat(index), context),
-      );
-
-      function update() {
-        // Tree is unsubscribed, no need to update this
-        if (node.isUnsubscribed) {
-          return;
-        }
-
-        const previousInstance = node.instance;
-
-        if (previousInstance instanceof Array) {
-          previousInstance.forEach((instance) => {
-            if (!instance || !instance.unsubscribe) return;
-
-            instance.unsubscribe();
-          });
-        } else if (previousInstance) {
-          previousInstance.unsubscribe();
-        }
-
-        // Render component
-        selfRender();
-
-        debugger
-        context.onUpdate(node.id, node.instance, previousInstance);
-      }
-
       node.iterable = node.type({ ...node.props, children: node.children });
-      // node.iterable = node.type.call(
-      //   { update },
-      //   { ...node.props, children: node.children },
-      // );
       let instance = node.iterable.next();
 
       while (isContext(instance.value)) {
@@ -139,33 +128,10 @@ export function render(nodeRaw, id = [0], context) {
 
         const [contextInstance, subscribe] = context.instances[contextName];
 
-        // Do not subscribe to contexts again
-        if (!node.instance) {
-          node.subscribed.push(
-            subscribe(update),
-          );
-        }
+        subscribe(update);
 
         instance = node.iterable.next(contextInstance);
       }
-
-      // @TODO: Handle multiple contexts
-      // while (isContext(rawInstance.value)) {
-      //   const contestName = rawInstance.value.name;
-      //   const currentContext = context.instances[contestName];
-
-      //   if (typeof currentContext === 'undefined') {
-      //     throw new Error(`Trying to access "${contestName}" in <${current.type.name}> component, but it was not defined in parent tree`);
-      //   }
-
-      //   const [contextInstance, subscribe] = context.instances[contestName];
-
-      //   current.subscribed.push(
-      //     subscribe(update),
-      //   );
-
-      //   rawInstance = await iterable.next(contextInstance);
-      // }
 
       node.instance = render(
         instance.value,

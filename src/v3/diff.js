@@ -45,7 +45,7 @@ export function diff(nodeBefore, nodeAfter) {
     }
 
     return changes.concat(
-      diff(nodeAfter.instance, nodeBefore.instance),
+      diff(nodeBefore.instance, nodeAfter.instance),
     );
   }
 
