@@ -10,7 +10,8 @@
     "target": "esnext",
     "lib": [
       "es2017",
-      "dom"
+      "dom",
+      "esnext.array"
     ],
     "checkJs": true,
     "noImplicitThis": true,
