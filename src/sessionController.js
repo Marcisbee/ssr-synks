@@ -1,4 +1,4 @@
-import { unsubscribeTree } from './core/unsubscribe-tree.js';
+// import { unsubscribeTree } from './core/unsubscribe-tree.js';
 
 const sessions = {};
 
@@ -51,7 +51,8 @@ export function unsubscribe(id, handler) {
 
 export function remove(id) {
   if (sessions[id]) {
-    unsubscribeTree(sessions[id].tree);
+    console.log('unsubscribe', id);
+    // unsubscribeTree(sessions[id].tree);
   }
   delete sessions[id];
 }

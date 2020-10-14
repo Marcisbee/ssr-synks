@@ -6,8 +6,9 @@
       ]
     },
     "baseUrl": ".",
-    "module": "commonjs",
+    "module": "esnext",
     "target": "esnext",
+    "moduleResolution": "node",
     "lib": [
       "es2017",
       "dom",

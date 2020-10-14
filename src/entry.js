@@ -1,12 +1,12 @@
 import { resolve } from 'path';
 
-import { diffTree } from './core/diff-tree.js';
-import { h } from './core/h.js';
-import { mount } from './core/mount.js';
-import { toHTML } from './core/to-html.js';
 // import { pathCompress } from './core/path-compress.js';
 // import { pathDecompress } from './core/path-decompress.js';
 import * as sessionController from './sessionController.js';
+import { diff } from './v3/diff.js';
+import { h } from './v3/h.js';
+import { mount } from './v3/mount.js';
+import { toHTML } from './v3/to-html.js';
 
 /**
  * @param {{ props?: Record<string, any> }} options
@@ -21,8 +21,8 @@ export async function entry({
   async function update(rawPath, next, previous) {
     const path = rawPath.join('.');
     // const path = pathCompress(rawPath.join('.'));
-    const diff = await diffTree(next, previous);
-    sessionController.update(props.sessionId, path, diff);
+    const diffOutput = await diff(next, previous);
+    sessionController.update(props.sessionId, path, diffOutput);
   }
 
   const initialTree = h(Index, props);

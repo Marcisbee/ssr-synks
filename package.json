@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "description": "",
   "type": "module",
-  "main": "src/core/index.js",
-  "module": "src/core/index.js",
+  "main": "src/v3/index.js",
+  "module": "src/v3/index.js",
   "engines": {
     "node": ">=12.x"
   },
@@ -12,6 +12,7 @@
     "resync": "bin/resync.js"
   },
   "scripts": {
+    "serve": "serve",
     "start": "node src/index.js",
     "dev": "npm start --prefix ./app",
     "test": "node node_modules/jest/bin/jest.js",
@@ -41,6 +42,7 @@
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-simple-import-sort": "^5.0.3",
     "jest": "^26.5.3",
+    "serve": "^11.3.2",
     "uvu": "^0.4.0-next.4"
   },
   "babel": {

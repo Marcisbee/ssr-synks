@@ -8,7 +8,6 @@ import { build } from './build.js';
 import { connect } from './client.js';
 import * as config from './config.js';
 
-// @ts-ignore
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 // @TODO:
@@ -92,6 +91,7 @@ const server = createServer((req, res) => {
     return;
   }
 
+  // @TODO: Fix deprecation:
   exists(pathname, async (exist) => {
     if ((!exist && ext === '') || pathname === path.join(__dirname, '../public/')) {
       let cookie = nodeCookie.get(req, config.cookie.name);
@@ -101,7 +101,12 @@ const server = createServer((req, res) => {
       if (!cookie) {
         const cookieRaw = String(Math.random());
         cookie = nodeCookie.create(
-          res, config.cookie.name, cookieRaw, {}, config.cookie.secret, true,
+          res,
+          config.cookie.name,
+          cookieRaw,
+          {},
+          config.cookie.secret,
+          true,
         );
       }
 
