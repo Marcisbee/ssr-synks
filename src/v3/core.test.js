@@ -1,5 +1,4 @@
 import { suite } from 'uvu';
-// eslint-disable-next-line import/extensions
 import * as assert from 'uvu/assert';
 
 import { diff } from './diff.js';
@@ -17,8 +16,7 @@ const tree1 = h('div', { class: 'foo', id: 'pop' }, 'Hello world', h(Component))
 
 const tree2 = h('div', { class: 'bar', id: 'pop' }, 'Hello moon', h('span', {}, 1, 2, 4));
 
-
-test('Math.sqrt()', () => {
+test('first', () => {
   const diffValues = diff(render(tree1), render(tree2));
 
   // assert.equal(
@@ -57,35 +55,25 @@ test('Math.sqrt()', () => {
   //   },
   // );
 
-  // assert.equal(
-  //   diffValues[2],
-  //   {
-  //     type: 3,
-  //     vnode: {
-  //       type: 'span',
-  //       props: {},
-  //       children: [
-  //         {
-  //           value: '124',
-  //           id: [0, 1, 0],
-  //         },
-  //       ],
-  //       id: [0, 1],
-  //     },
-  //     id: '0.1',
-  //     diff: {
-  //       type: 'span',
-  //       props: {},
-  //       children: [
-  //         {
-  //           value: '124',
-  //           id: [0, 1, 0],
-  //         },
-  //       ],
-  //       id: [0, 1],
-  //     },
-  //   },
-  // );
+  assert.equal(
+    diffValues[2],
+    {
+      type: 3,
+      vnode: {
+        type: 'span',
+        props: {},
+        children: [
+          {
+            value: '124',
+            id: [0, 1, 1],
+          },
+        ],
+        id: [0, 1],
+      },
+      id: '0.1',
+      diff: '<span>124</span>',
+    },
+  );
 
   assert.equal(
     diffValues[3],
@@ -105,7 +93,7 @@ test('Math.sqrt()', () => {
             children: [
               {
                 value: '124',
-                id: [0, 1, 0],
+                id: [0, 1, 1],
               },
             ],
             id: [0, 1],
