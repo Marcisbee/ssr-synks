@@ -18,10 +18,13 @@ export async function entry({
 
   const session = sessionController.get(props.sessionId);
 
-  async function update(rawPath, next, previous) {
-    const path = rawPath.join('.');
+  async function update(path, next, previous) {
     // const path = pathCompress(rawPath.join('.'));
-    const diffOutput = await diff(next, previous);
+    const diffOutput = await diff(previous, next).map((patch) => {
+      patch.id = patch.id.slice(path.length);
+
+      return patch;
+    });
     sessionController.update(props.sessionId, path, diffOutput);
   }
 

@@ -50,12 +50,23 @@ function htmlStructure({ css, app, sessionId }) {
     window.${config.session.name} = ${JSON.stringify(sessionId)};
   </script>
   ${css || ''}
+  <style>
+    * {
+      animation: 0.5s render forwards;
+    }
+
+    @keyframes render {
+      0% {
+        box-shadow: inset 0 0 0 500px yellow;
+      }
+      100% {
+        box-shadow: inset 0 0 0 500px transparent;
+      }
+    }
+  </style>
 </head>
 
-<body>
-  ${app || ''}
-  <script type="module" src="./client.js"></script>
-</body>
+<body>${app || ''}<script type="module" src="./client.js"></script></body>
 
 </html>`;
 }

@@ -22,6 +22,7 @@ export function* Counter() {
     yield (
       <div>
         <h1>{counter.count}</h1>
+        {counter.count % 2 && <b>boop</b>}
         <button class="btn mr-2" onclick={increment}>+</button>
         <button class="btn mr-2" onclick={decrement}>-</button>
         <br />

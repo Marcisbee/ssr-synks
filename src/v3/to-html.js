@@ -20,6 +20,18 @@ const selfClosingTags = [
   'wbr',
 ];
 
+function normalizeComponentName(name) {
+  return name.replace(/[A-Z]/g, (match, index) => {
+    const newMatch = match.toLowerCase();
+
+    if (!index) {
+      return newMatch;
+    }
+
+    return `-${newMatch}`;
+  });
+}
+
 export function toHTML(current) {
   if (typeof current === 'undefined' || current === null) return '';
   if (typeof current !== 'object') return String(current);
@@ -39,15 +51,15 @@ export function toHTML(current) {
 
   // If it's context, just render children
   if (isContext(current.type)) {
-    const name = current.type.name.toLowerCase();
+    const name = normalizeComponentName(current.type.name);
     return `<${name}>${toHTML(current.children)}</${name}>`;
   }
 
   if (current instanceof ComponentVnode) {
-    const name = current.type.name.toLowerCase();
+    const name = normalizeComponentName(current.type.name);
     const children = toHTML(current.instance);
 
-    return `<${name} data-sx="${current.id.join('.')}">${children}</${name}>`;
+    return `<${name}>${children}</${name}>`;
   }
 
   if (!(current instanceof ElementVnode)) {

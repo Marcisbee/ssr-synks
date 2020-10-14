@@ -1,4 +1,10 @@
 export function connect(win, doc, helpers, name, port, sessionName) {
+  const TEXT = 0;
+  const NODE = 1;
+  const PROPS = 2;
+  const INSERT = 3;
+  const REMOVE = 4;
+
   const ws = new WebSocket(`ws://localhost:${port}`);
   function syntheticEvent(event) {
     switch (event.type) {
@@ -134,6 +140,20 @@ export function connect(win, doc, helpers, name, port, sessionName) {
     });
   }
 
+  function getNodeByPath(root, path) {
+    // @TODO: Remove time and return output immediately
+    // console.time('GET NODE');
+    const output = path.reduce((parent, index) => {
+      if (!parent || !parent.childNodes) {
+        throw new Error(`Unexpected element path ${path.join('.')}`);
+      }
+
+      return parent.childNodes[index];
+    }, root);
+    // console.timeEnd('GET NODE');
+    return output;
+  }
+
   ws.onopen = () => {
     console.log('[open] Connection established');
 
@@ -164,28 +184,39 @@ export function connect(win, doc, helpers, name, port, sessionName) {
     if (type === 'update') {
       const [rawPath, diff] = data;
 
-      if (rawPath) {
-        const root = doc.querySelector(`[data-sx="${rawPath}"]`);
+      if (rawPath && diff) {
+        const root = getNodeByPath(document.body, rawPath);
 
-        if (root) {
-          patchDiff(diff, root);
-          return;
-        }
+        diff.forEach((patch) => {
+          switch (patch.type) {
+            case TEXT: {
+              const node = getNodeByPath(root, patch.id);
+              node.textContent = patch.diff;
+              break;
+            }
 
-        const path = rawPath;
-        // const path = win.atob(rawPath);
-        const [, parentPath, childPath] = path.match(/(.*)\.(\d+)$/, '') || [];
-        if (typeof parentPath === 'undefined' || typeof childPath === 'undefined') return;
+            case PROPS: {
+              break;
+            }
 
-        const parent = doc.querySelector(`[data-sx="${win.btoa(parentPath)}"]`);
+            case INSERT: {
+              const node = getNodeByPath(root, patch.id);
+              node.insertAdjacentHTML('beforebegin', patch.diff);
+              break;
+            }
 
-        if (!(parent instanceof Node)) return;
+            case REMOVE: {
+              const node = getNodeByPath(root, patch.id);
+              node.remove();
+              break;
+            }
 
-        patchDiff(diff, parent);
-        return;
+            default: {
+              break;
+            }
+          }
+        });
       }
-
-      patchDiff(diff, doc.body, true);
     }
 
     // Object.keys(update).forEach((key) => {
