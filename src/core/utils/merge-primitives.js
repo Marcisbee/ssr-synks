@@ -1,39 +1,30 @@
-import { isNode } from './is-node.js';
+import { TextVnode } from '../nodes/text.js';
+import { isPrimitive } from './is-primitive.js';
 
-function normalizePrimitive(primitive) {
-  if (primitive === null) {
-    return '';
+export function mergePrimitives(acc, value) {
+  if (acc.length === 0) {
+    return [value];
   }
 
-  return primitive;
-}
+  const lastValue = acc[acc.length - 1];
 
+  if (isPrimitive(lastValue) && isPrimitive(value)) {
+    return acc.slice(0, -1).concat(`${lastValue}${value}`);
+  }
 
-export function mergePrimitives(output, currentRaw) {
-  const currentArray = Array.prototype.concat.call([], currentRaw).flat(5);
+  if (lastValue instanceof TextVnode && isPrimitive(value)) {
+    lastValue.value = `${lastValue.value}${value}`;
+    return acc;
+  }
 
-  currentArray.forEach((current) => {
-    if (output.length === 0) {
-      output.push(
-        normalizePrimitive(current),
-      );
-      return;
-    }
+  if (lastValue instanceof TextVnode && value instanceof TextVnode) {
+    lastValue.value = `${lastValue.value}${value.value}`;
+    return acc;
+  }
 
-    if (isNode(current)) {
-      output.push(current);
-      return;
-    }
+  if (lastValue instanceof TextVnode && (value === null || value === undefined)) {
+    return acc;
+  }
 
-    const [previous] = output.slice(-1);
-
-    if (previous !== null && typeof previous === 'object') {
-      output.push(
-        normalizePrimitive(current),
-      );
-      return;
-    }
-
-    output[output.length - 1] = `${String(previous)}${String(normalizePrimitive(current))}`;
-  });
+  return acc.concat(value);
 }

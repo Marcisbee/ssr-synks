@@ -1,6 +1,6 @@
 import { render } from './render.js';
 
-export async function mount(rawTree, onUpdate) {
+export function mount(rawTree, onUpdate) {
   const actions = {};
   function addAction(rawPath, name, action) {
     const path = rawPath.join('.');
@@ -11,14 +11,12 @@ export async function mount(rawTree, onUpdate) {
     };
   }
   const context = {
-    index: 0,
-    path: [],
     instances: {},
     actions,
     addAction,
     onUpdate,
   };
-  const tree = await render(rawTree, context);
+  const tree = render(rawTree, [0], context);
 
   return {
     tree,

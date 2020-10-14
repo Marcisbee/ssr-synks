@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "description": "",
   "type": "module",
-  "main": "src/v3/index.js",
-  "module": "src/v3/index.js",
+  "main": "src/core/index.js",
+  "module": "src/core/index.js",
   "engines": {
     "node": ">=12.x"
   },
@@ -16,7 +16,7 @@
     "start": "node src/index.js",
     "dev": "npm start --prefix ./app",
     "test": "node node_modules/jest/bin/jest.js",
-    "uvu": "uvu src/v3",
+    "uvu": "uvu src/core",
     "lint": "eslint ./src"
   },
   "repository": {
@@ -64,8 +64,7 @@
       "es6": true
     },
     "ignorePatterns": [
-      "app",
-      "src/core"
+      "app"
     ],
     "extends": [
       "airbnb-base"

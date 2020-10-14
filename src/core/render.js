@@ -1,57 +1,172 @@
-import { renderArray } from './render/array.js';
-import { renderComponent } from './render/component.js';
-import { renderContext } from './render/context.js';
-import { renderGenerator } from './render/generator.js';
-import { CONTEXT_INSTANCE } from './symbols.js';
-import { isComponent } from './utils/is-component.js';
+import { ComponentVnode } from './nodes/component.js';
+import { ElementVnode } from './nodes/element.js';
+import { GeneratorVnode } from './nodes/generator.js';
+import { createProxy } from './utils/create-proxy.js';
 import { isContext } from './utils/is-context.js';
-import { isGenerator } from './utils/is-generator.js';
+import { mergePrimitives } from './utils/merge-primitives.js';
 import { parseProps } from './utils/parse-props.js';
+import { transformPrimitives } from './utils/transform-primitives.js';
 
-export async function render(current, context) {
-  context = {
+function renderContext(node, id, context) {
+  const { name } = node.type;
+  let subscribers = [];
+
+  const contextInstance = new node.type(node.props);
+
+  // contextInstance[CONTEXT_INSTANCE] = true;
+
+  const proxyInstance = createProxy(contextInstance, async () => {
+    const subs = subscribers.slice();
+    subscribers = [];
+
+    const solvedSubscribers = [];
+
+    for (const subscriber of subs) {
+      const isSolved = solvedSubscribers
+        .findIndex((subscriberId) => (
+          new RegExp(`^${subscriberId}\\.`).test(subscriber.id.join('.'))
+        )) !== -1;
+
+      // eslint-disable-next-line no-continue
+      if (isSolved) continue;
+
+      solvedSubscribers.push(subscriber.id.join('.'));
+      await subscriber();
+    }
+  });
+
+  const instance = [
+    proxyInstance,
+
+    // Subscribe
+    (update) => {
+      subscribers.push(update);
+    },
+  ];
+
+  const newContext = {
     ...context,
-    path: context.path.slice(),
+    instances: {
+      ...context.instances,
+      [name]: instance,
+    },
   };
 
-  if (current instanceof Array) {
-    return renderArray(current, context);
+  node.children = node.children.map(
+    // eslint-disable-next-line no-use-before-define
+    (child, index) => render(child, id.concat(index), newContext),
+  );
+
+  return node;
+}
+
+function renderArray(currentArray, id, context) {
+  let output = [];
+  const [originalLength] = id.slice(-1);
+  let length = originalLength;
+
+  for (const i in currentArray) {
+    const newContext = {
+      ...context,
+      index: length,
+    };
+    // eslint-disable-next-line no-use-before-define
+    const result = render(currentArray[i], id.concat(length), newContext);
+
+    output = mergePrimitives(output, result);
+
+    length = originalLength + output.length;
   }
 
-  if (current === undefined || current === null || typeof current !== 'object') {
-    return current;
+  return output;
+}
+
+export function render(nodeRaw, id = [0], context) {
+  if (nodeRaw instanceof Array) {
+    return renderArray(nodeRaw, id, context);
   }
 
-  if (current[CONTEXT_INSTANCE]) {
-    throw new Error(`Context "${current.constructor.name}" instance used in view layer`);
+  if (nodeRaw === undefined || nodeRaw === null || typeof nodeRaw !== 'object') {
+    return nodeRaw;
   }
 
-  context.path.push(context.index);
-  current.path = context.path;
+  const node = transformPrimitives(nodeRaw);
 
-  if (isContext(current.type)) {
-    return renderContext(current, context);
+  node.id = id;
+
+  if (isContext(node.type)) {
+    return renderContext(node, id, context);
   }
 
-  if (isGenerator(current.type)) {
-    return renderGenerator(current, context);
+  // @TODO: Replace output functions with paths
+  if (node instanceof GeneratorVnode) {
+    // eslint-disable-next-line no-inner-declarations
+    function update() {
+      const previousInstance = node.instance;
+
+      // Render component
+      // eslint-disable-next-line no-use-before-define
+      selfRender();
+
+      context.onUpdate(node.id, node.instance, previousInstance);
+    }
+
+    update.id = node.id;
+
+    // eslint-disable-next-line no-inner-declarations
+    function selfRender() {
+      node.iterable = node.type({ ...node.props, children: node.children });
+      let instance = node.iterable.next();
+
+      while (isContext(instance.value)) {
+        const contextName = instance.value.name;
+        const currentContext = context.instances[contextName];
+
+        if (typeof currentContext === 'undefined') {
+          throw new Error(`Trying to access "${contextName}" in <${node.type.name}> component, but it was not defined in parent tree`);
+        }
+
+        const [contextInstance, subscribe] = context.instances[contextName];
+
+        subscribe(update);
+
+        instance = node.iterable.next(contextInstance);
+      }
+
+      node.instance = render(
+        instance.value,
+        id.concat(0),
+        context,
+      );
+    }
+
+    // Render component
+    selfRender();
+
+    return node;
   }
 
-  if (isComponent(current.type)) {
-    return renderComponent(current, context);
-  }
-
-  parseProps(current, context);
-
-  if (current.children && current.children.length > 0) {
-    current.children = await renderArray(
-      current.children,
-      {
-        ...context,
-        index: 0,
-      },
+  if (node instanceof ComponentVnode) {
+    node.children = node.children.map(
+      (child, index) => render(child, id.concat(index), context),
     );
+
+    node.instance = render(
+      node.type.call({}, { ...node.props, children: node.children }),
+      id.concat(0),
+      context,
+    );
+
+    return node;
   }
 
-  return current;
+  if (node instanceof ElementVnode) {
+    node.children = renderArray(node.children, id, context);
+
+    parseProps(node, context);
+
+    return node;
+  }
+
+  return node;
 }

@@ -1,12 +1,10 @@
 import { resolve } from 'path';
 
-// import { pathCompress } from './core/path-compress.js';
-// import { pathDecompress } from './core/path-decompress.js';
+import { diff } from './core/diff.js';
+import { h } from './core/h.js';
+import { mount } from './core/mount.js';
+import { toHTML } from './core/to-html.js';
 import * as sessionController from './sessionController.js';
-import { diff } from './v3/diff.js';
-import { h } from './v3/h.js';
-import { mount } from './v3/mount.js';
-import { toHTML } from './v3/to-html.js';
 
 /**
  * @param {{ props?: Record<string, any> }} options
@@ -19,7 +17,6 @@ export async function entry({
   const session = sessionController.get(props.sessionId);
 
   async function update(path, next, previous) {
-    // const path = pathCompress(rawPath.join('.'));
     const diffOutput = await diff(previous, next).map((patch) => {
       patch.id = patch.id.slice(path.length);
 
@@ -36,7 +33,6 @@ export async function entry({
 
   async function message(rawPath, rawName, event) {
     const path = rawPath;
-    // const path = pathDecompress(rawPath);
     const name = `on${rawName}`;
     const actionsInPath = actions[path];
 
