@@ -5,7 +5,7 @@ import { Counter } from './counter';
 
 export default {
   '/': () => <Counter />,
-  '/about': () => 'About',
+  '/about': () => 'AboutHTML',
   '/users/:userId': ({ userId }) => `Users ${userId}`,
   '404': () => '404 Error',
 };

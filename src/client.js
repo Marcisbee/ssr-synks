@@ -200,7 +200,17 @@ export function connect(win, doc, helpers, name, port, sessionName) {
             }
 
             case INSERT: {
-              const node = getNodeByPath(root, patch.id);
+              const id = patch.id.slice();
+              const lastId = id.pop();
+              const parent = getNodeByPath(root, id);
+
+              if (parent.childNodes.length === 0) {
+                parent.innerHTML = patch.diff;
+                break;
+              }
+
+              const node = parent.childNodes[lastId];
+
               node.insertAdjacentHTML('beforebegin', patch.diff);
               break;
             }

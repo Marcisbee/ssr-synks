@@ -1,4 +1,5 @@
 import { ComponentVnode } from './nodes/component.js';
+import { ContextVnode } from './nodes/context.js';
 import { ElementVnode } from './nodes/element.js';
 import { GeneratorVnode } from './nodes/generator.js';
 import { createProxy } from './utils/create-proxy.js';
@@ -16,12 +17,9 @@ function renderContext(node, id, context) {
   // contextInstance[CONTEXT_INSTANCE] = true;
 
   const proxyInstance = createProxy(contextInstance, async () => {
-    const subs = subscribers.slice();
-    subscribers = [];
-
     const solvedSubscribers = [];
 
-    for (const subscriber of subs) {
+    for (const subscriber of subscribers) {
       const isSolved = solvedSubscribers
         .findIndex((subscriberId) => (
           new RegExp(`^${subscriberId}\\.`).test(subscriber.id.join('.'))
@@ -40,6 +38,12 @@ function renderContext(node, id, context) {
 
     // Subscribe
     (update) => {
+      const updateId = update.id.join('.');
+
+      // Remove duplicate subscribers
+      subscribers = subscribers
+        .filter((subscriber) => subscriber.id.join('.') !== updateId);
+
       subscribers.push(update);
     },
   ];
@@ -86,7 +90,7 @@ export function render(nodeRaw, id = [0], context) {
     return renderArray(nodeRaw, id, context);
   }
 
-  if (nodeRaw === undefined || nodeRaw === null || typeof nodeRaw !== 'object') {
+  if (nodeRaw === undefined || nodeRaw === null || (typeof nodeRaw !== 'object' && !nodeRaw)) {
     return nodeRaw;
   }
 
@@ -94,7 +98,7 @@ export function render(nodeRaw, id = [0], context) {
 
   node.id = id;
 
-  if (isContext(node.type)) {
+  if (node instanceof ContextVnode) {
     return renderContext(node, id, context);
   }
 
@@ -115,7 +119,9 @@ export function render(nodeRaw, id = [0], context) {
 
     // eslint-disable-next-line no-inner-declarations
     function selfRender() {
-      node.iterable = node.type({ ...node.props, children: node.children });
+      if (!node.iterable) {
+        node.iterable = node.type({ ...node.props, children: node.children });
+      }
       let instance = node.iterable.next();
 
       while (isContext(instance.value)) {
@@ -147,9 +153,7 @@ export function render(nodeRaw, id = [0], context) {
   }
 
   if (node instanceof ComponentVnode) {
-    node.children = node.children.map(
-      (child, index) => render(child, id.concat(index), context),
-    );
+    node.children = renderArray(node.children, id, context);
 
     node.instance = render(
       node.type.call({}, { ...node.props, children: node.children }),

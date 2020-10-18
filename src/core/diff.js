@@ -1,4 +1,5 @@
 import { ComponentVnode } from './nodes/component.js';
+import { ContextVnode } from './nodes/context.js';
 import { ElementVnode } from './nodes/element.js';
 import { PatchVnode } from './nodes/patch.js';
 import { TextVnode } from './nodes/text.js';
@@ -24,6 +25,19 @@ export function diff(nodeBefore, nodeAfter) {
 
   if (nodeBefore === nodeAfter) {
     return changes;
+  }
+
+  if (nodeBefore instanceof ContextVnode && nodeAfter instanceof ContextVnode) {
+    if (nodeBefore.type !== nodeAfter.type) {
+      return changes.concat(
+        new PatchVnode(REMOVE, nodeBefore),
+        new PatchVnode(INSERT, nodeAfter, toHTML(nodeAfter)),
+      );
+    }
+
+    return changes.concat(
+      diff(nodeBefore.children, nodeAfter.children),
+    );
   }
 
   if (nodeBefore instanceof TextVnode && nodeAfter instanceof TextVnode) {

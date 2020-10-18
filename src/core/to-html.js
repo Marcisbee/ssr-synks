@@ -1,7 +1,7 @@
 import { ComponentVnode } from './nodes/component.js';
+import { ContextVnode } from './nodes/context.js';
 import { ElementVnode } from './nodes/element.js';
 import { TextVnode } from './nodes/text.js';
-import { isContext } from './utils/is-context.js';
 
 const selfClosingTags = [
   'area',
@@ -50,7 +50,7 @@ export function toHTML(current) {
   }
 
   // If it's context, just render children
-  if (isContext(current.type)) {
+  if (current instanceof ContextVnode) {
     const name = normalizeComponentName(current.type.name);
     return `<${name}>${toHTML(current.children)}</${name}>`;
   }

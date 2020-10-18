@@ -19,6 +19,7 @@ export async function entry({
   async function update(path, next, previous) {
     const diffOutput = await diff(previous, next).map((patch) => {
       patch.id = patch.id.slice(path.length);
+      patch.vnode = undefined;
 
       return patch;
     });
