@@ -99,6 +99,15 @@ export function diff(nodeBefore, nodeAfter) {
         const propBefore = (nodeBefore.props || {})[key];
         const propAfter = (nodeAfter.props || {})[key];
 
+        if (typeof propAfter === 'function') {
+          // We know that in FE side function is always static, if it changes, no need to patch
+          if (typeof propBefore === typeof propAfter) {
+            return acc;
+          }
+
+          return `__sx('${nodeAfter.id.join('.')}', event)`;
+        }
+
         if (propAfter === undefined) {
           return {
             ...acc,

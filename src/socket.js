@@ -24,7 +24,7 @@ export function startSocket() {
         );
       },
       update(path, data) {
-        if (typeof data === 'undefined') {
+        if (typeof data === 'undefined' || data.length === 0) {
           return;
         }
 
