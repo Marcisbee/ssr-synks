@@ -65,81 +65,6 @@ export function connect(win, doc, helpers, name, port, sessionName) {
     });
   }
 
-  const placeholder = document.createElement('div');
-  function getNodesFromHTML(html) {
-    placeholder.innerHTML = html;
-
-    return Array.from(placeholder.childNodes);
-  }
-
-  function patchDiff(node, target, isParent) {
-    // No difference
-    if (typeof node === 'undefined') {
-      return;
-    }
-
-    // Remove node
-    if (node === null) {
-      target.remove();
-      return;
-    }
-
-    // Replace node
-    if (typeof node !== 'object') {
-      if (target.nodeType === 3) {
-        target.textContent = node;
-        return;
-      }
-
-      if (isParent) {
-        target.innerHTML = node;
-        return;
-      }
-
-      target.outerHTML = node;
-      return;
-    }
-
-    // It's a context or component
-    if (node.type === 2) {
-      patchDiff(node.children, target);
-      return;
-    }
-
-    // Update props & children
-    if (node.children && node.props) {
-      patchDiff(node.children, target);
-      patchProps(node.props, target);
-      return;
-    }
-
-    // Update childNodes
-    const currentLength = target.childNodes.length;
-    Object.keys(node).forEach((key) => {
-      const value = node[key];
-
-      if (currentLength <= key) {
-        if (target.nodeType === 3) {
-          const normalValue = value && value.type === 1 ? value.children : value;
-          const nodes = getNodesFromHTML(normalValue);
-
-          nodes.forEach((child) => {
-            target.parentElement.insertBefore(child, target);
-          });
-          target.remove();
-          return;
-        }
-
-        target.insertAdjacentHTML('beforeend', value);
-        return;
-      }
-
-      const child = target.childNodes[key];
-
-      patchDiff(value, child);
-    });
-  }
-
   function getNodeByPath(root, path) {
     // @TODO: Remove time and return output immediately
     // console.time('GET NODE');
@@ -152,6 +77,48 @@ export function connect(win, doc, helpers, name, port, sessionName) {
     }, root);
     // console.timeEnd('GET NODE');
     return output;
+  }
+
+  function patchDiff(patch, root) {
+    switch (patch.type) {
+      case TEXT: {
+        const node = getNodeByPath(root, patch.id);
+        node.textContent = patch.diff;
+        break;
+      }
+
+      case PROPS: {
+        const node = getNodeByPath(root, patch.id);
+        console.log('patch props', node, patch.diff);
+        break;
+      }
+
+      case INSERT: {
+        const id = patch.id.slice();
+        const lastId = id.pop();
+        const parent = getNodeByPath(root, id);
+
+        if (parent.childNodes.length === 0) {
+          parent.innerHTML = patch.diff;
+          break;
+        }
+
+        const node = parent.childNodes[lastId];
+
+        node.insertAdjacentHTML('beforebegin', patch.diff);
+        break;
+      }
+
+      case REMOVE: {
+        const node = getNodeByPath(root, patch.id);
+        node.remove();
+        break;
+      }
+
+      default: {
+        break;
+      }
+    }
   }
 
   ws.onopen = () => {
@@ -187,45 +154,7 @@ export function connect(win, doc, helpers, name, port, sessionName) {
       if (rawPath && diff) {
         const root = getNodeByPath(document.body, rawPath);
 
-        diff.forEach((patch) => {
-          switch (patch.type) {
-            case TEXT: {
-              const node = getNodeByPath(root, patch.id);
-              node.textContent = patch.diff;
-              break;
-            }
-
-            case PROPS: {
-              break;
-            }
-
-            case INSERT: {
-              const id = patch.id.slice();
-              const lastId = id.pop();
-              const parent = getNodeByPath(root, id);
-
-              if (parent.childNodes.length === 0) {
-                parent.innerHTML = patch.diff;
-                break;
-              }
-
-              const node = parent.childNodes[lastId];
-
-              node.insertAdjacentHTML('beforebegin', patch.diff);
-              break;
-            }
-
-            case REMOVE: {
-              const node = getNodeByPath(root, patch.id);
-              node.remove();
-              break;
-            }
-
-            default: {
-              break;
-            }
-          }
-        });
+        diff.forEach((patch) => patchDiff(patch, root));
       }
     }
 
