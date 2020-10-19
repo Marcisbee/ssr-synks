@@ -93,6 +93,8 @@
     "rules": {
       "import/prefer-default-export": "off",
       "import/no-cycle": "off",
+      "default-case": "off",
+      "no-useless-return": "off",
       "no-underscore-dangle": "off",
       "no-restricted-syntax": "off",
       "no-param-reassign": "off",

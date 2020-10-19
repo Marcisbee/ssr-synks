@@ -84,14 +84,13 @@ export function connect(win, doc, helpers, name, port, sessionName) {
       case TEXT: {
         const node = getNodeByPath(root, patch.id);
         node.textContent = patch.diff;
-        break;
+        return;
       }
 
       case PROPS: {
         const node = getNodeByPath(root, patch.id);
         patchProps(patch.diff, node);
-        console.log('patch props', node, patch.diff);
-        break;
+        return;
       }
 
       case INSERT: {
@@ -101,23 +100,19 @@ export function connect(win, doc, helpers, name, port, sessionName) {
 
         if (parent.childNodes.length === 0) {
           parent.innerHTML = patch.diff;
-          break;
+          return;
         }
 
         const node = parent.childNodes[lastId];
 
         node.insertAdjacentHTML('beforebegin', patch.diff);
-        break;
+        return;
       }
 
       case REMOVE: {
         const node = getNodeByPath(root, patch.id);
         node.remove();
-        break;
-      }
-
-      default: {
-        break;
+        return;
       }
     }
   }
@@ -132,6 +127,12 @@ export function connect(win, doc, helpers, name, port, sessionName) {
         e.type,
         syntheticEvent(e),
       ]));
+    };
+
+    win.__sn = (e) => {
+      e.preventDefault();
+      const url = e.target.href;
+      console.log({ e, url });
     };
 
     const session = win[sessionName];
@@ -149,6 +150,10 @@ export function connect(win, doc, helpers, name, port, sessionName) {
   ws.onmessage = (event) => {
     const [type, ...data] = JSON.parse(event.data);
 
+    if (type === 'no-change') {
+      return;
+    }
+
     if (type === 'update') {
       const [rawPath, diff] = data;
 
@@ -157,6 +162,8 @@ export function connect(win, doc, helpers, name, port, sessionName) {
 
         diff.forEach((patch) => patchDiff(patch, root));
       }
+
+      return;
     }
 
     // Object.keys(update).forEach((key) => {

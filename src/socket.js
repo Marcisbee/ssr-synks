@@ -24,7 +24,16 @@ export function startSocket() {
         );
       },
       update(path, data) {
-        if (typeof data === 'undefined' || data.length === 0) {
+        if (typeof data === 'undefined') {
+          return;
+        }
+
+        if (data.length === 0) {
+          ws.send(
+            JSON.stringify(
+              ['no-change'],
+            ),
+          );
           return;
         }
 
@@ -80,7 +89,7 @@ export function startSocket() {
         }
 
         subscribe(sessionId, handler);
-        action.update(0, session.html);
+        action.init('Some key?');
       }
     });
   });

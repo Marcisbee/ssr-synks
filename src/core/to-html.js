@@ -3,6 +3,7 @@ import { ContextVnode } from './nodes/context.js';
 import { ElementVnode } from './nodes/element.js';
 import { TextVnode } from './nodes/text.js';
 
+const navigationHandler = '__sn(event)';
 const selfClosingTags = [
   'area',
   'base',
@@ -74,17 +75,30 @@ export function toHTML(current) {
     children,
   } = current;
 
+  const ensuredProps = props || {};
   const childNodes = children ? toHTML(children) : '';
 
-  const attributes = Object.entries(props || {})
+  const canNavigate = type === 'a' && !!ensuredProps.href;
+  const hasOnclick = !!ensuredProps.onclick;
+
+  const attributes = Object.entries(ensuredProps)
     .map(([key, originalValue]) => {
-      const normalValue = originalValue instanceof Function
+      let normalValue = originalValue instanceof Function
         ? `__sx('${id.join('.')}', event)`
         : originalValue;
+
+      if (canNavigate && hasOnclick && key === 'onclick') {
+        normalValue = `${normalValue};${navigationHandler}`;
+      }
+
       const value = JSON.stringify(String(normalValue));
 
       return `${key}=${value}`;
     });
+
+  if (canNavigate && !hasOnclick) {
+    attributes.push(`onclick="${navigationHandler}"`);
+  }
 
   // To avoid awkward space between tag and ending of tag when there are no attributes
   const tagHead = [type].concat(attributes).join(' ');
