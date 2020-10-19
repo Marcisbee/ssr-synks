@@ -64,9 +64,10 @@ function renderContext(node, id, context) {
   return node;
 }
 
+// @TODO: Fix multi child trees
 function renderArray(currentArray, id, context) {
   let output = [];
-  const [originalLength] = id.slice(-1);
+  const originalLength = 0;
   let length = originalLength;
 
   for (const i in currentArray) {

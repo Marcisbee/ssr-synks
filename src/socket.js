@@ -46,6 +46,8 @@ export function startSocket() {
     ws.on('close', () => {
       unsubscribe(sessionId, handler);
       remove(sessionId);
+      // Collecting garbage manually
+      global.gc();
     });
 
     ws.on('message', async (msg) => {

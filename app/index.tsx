@@ -65,12 +65,16 @@ function* App() {
   }
 
   while (true) {
+    const props = {}
+    if (router.path === '/about') {
+      props.class = 'cool-class';
+    }
     yield (
       <div>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/14.4.0/primer.css" />
         <div class="pagination">
           <a onclick={() => router.navigate('/')}>Home</a>
-          <a onclick={() => router.navigate('/about')}>About</a>
+          <a onclick={() => router.navigate('/about')} {...props}>About</a>
           <a href="/users/1">Tom</a>
           <a href="/users/2">Jane</a>
         </div>

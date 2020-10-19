@@ -89,6 +89,7 @@ export function connect(win, doc, helpers, name, port, sessionName) {
 
       case PROPS: {
         const node = getNodeByPath(root, patch.id);
+        patchProps(patch.diff, node);
         console.log('patch props', node, patch.diff);
         break;
       }
