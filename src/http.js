@@ -63,10 +63,35 @@ function htmlStructure({ css, app, sessionId }) {
         box-shadow: inset 0 0 0 500px transparent;
       }
     }
+
+    body.connected:before {
+      display: block;
+      content: 'Connected';
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      padding: 5px 10px;
+      background-color: red;
+      color: #fff;
+      border-radius: 4px;
+    }
+    body:not(.connected):before {
+      display: block;
+      content: 'Offline';
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      padding: 5px 10px;
+      background-color: gray;
+      color: #fff;
+      border-radius: 4px;
+    }
   </style>
+  <script src="./client.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/14.4.0/primer.css" />
 </head>
 
-<body>${app || ''}<script type="module" src="./client.js"></script></body>
+<body>${app || ''}<script>ResyncConnect();</script></body>
 
 </html>`;
 }
