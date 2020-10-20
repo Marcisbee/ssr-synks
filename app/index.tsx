@@ -23,34 +23,8 @@ function cc(value) {
   return String(value);
 }
 
-class Router {
-  path = '/';
-
-  constructor({ initialPath }) {
-    this.path = initialPath;
-  }
-
-  navigate(path) {
-    this.path = path;
-  }
-}
-
-function* RouterOutlet({ routes }) {
-  const router = yield Router;
-
-  while (true) {
-    const route = routes[router.path];
-
-    if (!route) {
-      yield null;
-    } else {
-      yield route({});
-    }
-  }
-}
-
 function* App() {
-  const router = yield Router;
+  const router = yield Resync.Router;
 
   const aboutClass = {
     active: router.path === '/about',
@@ -72,13 +46,13 @@ function* App() {
     yield (
       <div>
         <div class="pagination">
-          <a onclick={() => router.navigate('/')}>Home</a>
-          <a onclick={() => router.navigate('/about')} {...props}>About</a>
+          <a href="/">Home</a>
+          <a href="/about" {...props}>About</a>
           <a href="/users/1">Tom</a>
           <a href="/users/2">Jane</a>
         </div>
         <CounterContext>
-          <RouterOutlet routes={routes} />
+          <Resync.RouterOutlet routes={routes} />
         </CounterContext>
       </div>
     );
@@ -88,9 +62,7 @@ function* App() {
 export default function Index() {
   return (
     <div id="app">
-      <Router initialPath="/">
-        <App />
-      </Router>
+      <App />
     </div>
   );
 }

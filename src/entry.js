@@ -3,6 +3,7 @@ import { resolve } from 'path';
 import { diff } from './core/diff.js';
 import { h } from './core/h.js';
 import { mount } from './core/mount.js';
+import { Router } from './core/router.js';
 import { toHTML } from './core/to-html.js';
 import * as sessionController from './sessionController.js';
 
@@ -12,6 +13,7 @@ import * as sessionController from './sessionController.js';
 export async function entry({
   props = {},
 } = {}) {
+  const { initialPath } = props;
   const Index = (await import(resolve('./dist/main.js'))).default;
 
   const session = sessionController.get(props.sessionId);
@@ -26,10 +28,11 @@ export async function entry({
     sessionController.update(props.sessionId, path, diffOutput);
   }
 
-  const initialTree = h(Index, props);
+  const initialTree = h(Router, { initialPath }, h(Index, props));
   const {
     actions,
     tree,
+    instances,
   } = await mount(initialTree, update);
 
   async function message(rawPath, rawName, event) {
@@ -51,5 +54,6 @@ export async function entry({
     tree,
     html,
     message,
+    instances,
   };
 }

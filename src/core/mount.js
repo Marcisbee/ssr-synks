@@ -21,5 +21,6 @@ export function mount(rawTree, onUpdate) {
   return {
     tree,
     actions,
+    instances: context.instances,
   };
 }

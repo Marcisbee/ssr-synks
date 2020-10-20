@@ -48,17 +48,11 @@ function renderContext(node, id, context) {
     },
   ];
 
-  const newContext = {
-    ...context,
-    instances: {
-      ...context.instances,
-      [name]: instance,
-    },
-  };
+  context.instances[name] = instance;
 
   node.children = node.children.map(
     // eslint-disable-next-line no-use-before-define
-    (child, index) => render(child, id.concat(index), newContext),
+    (child, index) => render(child, id.concat(index), context),
   );
 
   return node;

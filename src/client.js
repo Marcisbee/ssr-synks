@@ -5,6 +5,8 @@ export function connect(win, doc, helpers, name, port, sessionName) {
   const INSERT = 3;
   const REMOVE = 4;
 
+  let isConnected = false;
+
   function syntheticEvent(event) {
     switch (event.type) {
       case 'click':
@@ -120,8 +122,17 @@ export function connect(win, doc, helpers, name, port, sessionName) {
     const ws = new WebSocket(`ws://localhost:${port}`);
 
     ws.onopen = () => {
+      isConnected = true;
       document.body.className = 'connected';
       console.log('[open] Connection established');
+
+      win.onpopstate = () => {
+        const url = win.location.href.replace(win.location.origin, '');
+        ws.send(JSON.stringify([
+          'navigate',
+          url,
+        ]));
+      };
 
       win.__sx = (id, e) => {
         ws.send(JSON.stringify([
@@ -133,9 +144,15 @@ export function connect(win, doc, helpers, name, port, sessionName) {
       };
 
       win.__sn = (e) => {
-        e.preventDefault();
-        const url = e.target.href;
-        console.log({ e, url });
+        if (isConnected) {
+          e.preventDefault();
+        }
+        const url = e.target.href.replace(win.location.origin, '');
+        win.history.pushState(undefined, document.title, url);
+        ws.send(JSON.stringify([
+          'navigate',
+          url,
+        ]));
       };
 
       const session = win[sessionName];
@@ -178,6 +195,7 @@ export function connect(win, doc, helpers, name, port, sessionName) {
     };
 
     ws.onclose = (event) => {
+      isConnected = false;
       document.body.className = '';
       // connection.innerHTML = 'close';
       if (event.wasClean) {

@@ -17,6 +17,7 @@ export function create(id, cookie) {
     tree: {},
     message: null,
     html: null,
+    instances: null,
     cookie,
   };
 }

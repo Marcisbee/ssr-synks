@@ -141,7 +141,7 @@ export function diff(nodeBefore, nodeAfter) {
     );
   }
 
-  if (nodeBefore.constructor.name !== nodeAfter.constructor.name) {
+  if ((nodeBefore && nodeBefore.constructor.name) !== (nodeAfter && nodeAfter.constructor.name)) {
     return changes.concat(
       new PatchVnode(REMOVE, nodeBefore),
       new PatchVnode(INSERT, nodeAfter, toHTML(nodeAfter)),

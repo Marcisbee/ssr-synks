@@ -146,7 +146,7 @@ const server = createServer((req, res) => {
         );
       }
 
-      const app = await build(sessionId, cookie);
+      const app = await build(sessionId, cookie, parsedUrl.pathname);
       const html = htmlStructure({ css: '', app: app.html, sessionId });
 
       res.setHeader('Content-type', 'text/html');

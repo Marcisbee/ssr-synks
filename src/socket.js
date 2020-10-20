@@ -62,6 +62,18 @@ export function startSocket() {
     ws.on('message', async (msg) => {
       const [type, ...data] = JSON.parse(msg.toString());
 
+      if (type === 'navigate') {
+        const [routerInstance] = session.instances.Router || [];
+        const [url] = data;
+
+        if (!routerInstance) {
+          return;
+        }
+
+        routerInstance.navigate(url);
+        return;
+      }
+
       if (type === 'event' && data.length > 0) {
         const [path, name, event] = data;
 
