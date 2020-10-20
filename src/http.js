@@ -87,7 +87,7 @@ function htmlStructure({ css, app, sessionId }) {
       border-radius: 4px;
     }
   </style>
-  <script src="./client.js"></script>
+  <script src="/client.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/14.4.0/primer.css" />
 </head>
 
