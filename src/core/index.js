@@ -1,12 +1,14 @@
 import { h } from './h.js';
 import { render } from './render.js';
 import { Router, RouterOutlet } from './router.js';
+import { Session } from './session.js';
 
 export default {
   h,
   render,
   Router,
   RouterOutlet,
+  Session,
 };
 
 // --- usage

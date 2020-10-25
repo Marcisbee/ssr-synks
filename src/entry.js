@@ -4,6 +4,7 @@ import { diff } from './core/diff.js';
 import { h } from './core/h.js';
 import { mount } from './core/mount.js';
 import { Router, RouterOutlet } from './core/router.js';
+import { Session } from './core/session.js';
 import { toHTML } from './core/to-html.js';
 import * as sessionController from './sessionController.js';
 
@@ -28,7 +29,15 @@ export async function entry({
     sessionController.update(props.sessionId, path, diffOutput);
   }
 
-  const initialTree = h(Router, { routes, initialPath }, h(RouterOutlet, props));
+  const initialTree = h(
+    Session,
+    { id: props.sessionId },
+    h(
+      Router,
+      { routes, initialPath },
+      h(RouterOutlet, props),
+    ),
+  );
   const {
     actions,
     tree,
