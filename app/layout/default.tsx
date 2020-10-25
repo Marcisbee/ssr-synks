@@ -10,6 +10,7 @@ export function DefaultLayout({ children }) {
         <a href="/about">About</a>
         <a href="/users/1">Tom</a>
         <a href="/users/2">Jane</a>
+        <a href="/error">error</a>
       </nav>
 
       <main id="maincontent">

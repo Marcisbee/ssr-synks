@@ -12,6 +12,7 @@ export class Router {
     const match = matcher(path);
 
     if (!match) {
+      this.key = null;
       this.params = {};
       return;
     }
