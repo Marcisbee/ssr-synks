@@ -16,7 +16,12 @@ function keyToPattern(key) {
   };
 }
 
+/**
+ * @param {Record<string, () => any>} matches
+ * @returns {(pathRaw: string) => { key: string, params: Record<string, any> } | null}
+ */
 export function createMatcher(matches) {
+  /** @type {[{ pattern: RegExp, params: any[] }, string][]} */
   const patterns = Object.keys(matches).map((key) => [
     keyToPattern(key),
     key,

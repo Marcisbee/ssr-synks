@@ -2,7 +2,7 @@ export function createProxy(target, onChange) {
   const proxy = new Proxy(target, {
     get(t, property) {
       const item = target[property];
-      if (item && typeof item === 'function') {
+      if (item && typeof item === 'function' && property[0] !== '_') {
         return (...args) => {
           const output = item.apply(target, args);
           onChange();
@@ -11,17 +11,13 @@ export function createProxy(target, onChange) {
         };
       }
 
-      if (item && typeof item === 'object') {
-        return createProxy(item, onChange);
-      }
 
       return item;
     },
     set(t, property, newValue) {
       target[property] = newValue;
-      onChange();
 
-      return true;
+      return newValue;
     },
   });
 

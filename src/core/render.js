@@ -14,8 +14,6 @@ function renderContext(node, id, context) {
 
   const contextInstance = new node.type(node.props);
 
-  // contextInstance[CONTEXT_INSTANCE] = true;
-
   const proxyInstance = createProxy(contextInstance, async () => {
     const solvedSubscribers = [];
 
@@ -91,7 +89,7 @@ export function render(nodeRaw, id = [0], context) {
 
   const node = transformPrimitives(nodeRaw);
 
-  node.id = id;
+  node.id = id.slice();
 
   if (node instanceof ContextVnode) {
     return renderContext(node, id, context);
@@ -136,7 +134,7 @@ export function render(nodeRaw, id = [0], context) {
 
       node.instance = render(
         instance.value,
-        id.concat(0),
+        node.id.concat(0),
         context,
       );
     }
@@ -148,11 +146,11 @@ export function render(nodeRaw, id = [0], context) {
   }
 
   if (node instanceof ComponentVnode) {
-    node.children = renderArray(node.children, id, context);
+    node.children = renderArray(node.children, node.id, context);
 
     node.instance = render(
       node.type.call({}, { ...node.props, children: node.children }),
-      id.concat(0),
+      node.id.concat(0),
       context,
     );
 
@@ -160,7 +158,7 @@ export function render(nodeRaw, id = [0], context) {
   }
 
   if (node instanceof ElementVnode) {
-    node.children = renderArray(node.children, id, context);
+    node.children = renderArray(node.children, node.id, context);
 
     parseProps(node, context);
 

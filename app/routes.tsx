@@ -1,11 +1,11 @@
 import Resync from 'resync';
 
-// import Home from './home';
-import { Counter } from './counter';
+import { Home } from './pages/home';
+import { DefaultLayout } from './layout/default';
 
 export default {
-  '/': () => <Counter />,
-  '/about': () => 'AboutHTML',
+  '/': () => <Home />,
+  '/about': () => <DefaultLayout>AboutHTML</DefaultLayout>,
   '/users/:userId': ({ userId }) => `Users ${userId}`,
   '404': () => '404 Error',
 };
