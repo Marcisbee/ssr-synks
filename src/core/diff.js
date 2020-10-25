@@ -51,7 +51,9 @@ export function diff(nodeBefore, nodeAfter) {
   }
 
   if (nodeBefore instanceof ComponentVnode && nodeAfter instanceof ComponentVnode) {
-    if (nodeBefore.type !== nodeAfter.type) {
+    if (nodeBefore.type !== nodeAfter.type
+        && (nodeBefore.instance && nodeAfter.instance)
+        && (nodeBefore.instance.type !== nodeAfter.instance.type)) {
       return changes.concat(
         new PatchVnode(REMOVE, nodeBefore),
         new PatchVnode(INSERT, nodeAfter, toHTML(nodeAfter)),
@@ -142,8 +144,14 @@ export function diff(nodeBefore, nodeAfter) {
   }
 
   if ((nodeBefore && nodeBefore.constructor.name) !== (nodeAfter && nodeAfter.constructor.name)) {
+    if (nodeBefore) {
+      return changes.concat(
+        new PatchVnode(REMOVE, nodeBefore),
+        new PatchVnode(INSERT, nodeAfter, toHTML(nodeAfter)),
+      );
+    }
+
     return changes.concat(
-      new PatchVnode(REMOVE, nodeBefore),
       new PatchVnode(INSERT, nodeAfter, toHTML(nodeAfter)),
     );
   }

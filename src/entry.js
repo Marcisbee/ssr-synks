@@ -19,7 +19,6 @@ export async function entry({
   const session = sessionController.get(props.sessionId);
 
   async function update(path, next, previous) {
-
     const diffOutput = await diff(previous, next).map((patch) => {
       patch.id = patch.id.slice(path.length);
 

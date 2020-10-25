@@ -146,11 +146,11 @@ export function render(nodeRaw, id = [0], context) {
   }
 
   if (node instanceof ComponentVnode) {
-    node.children = renderArray(node.children, node.id, context);
+    node.children = renderArray(node.children, id, context);
 
     node.instance = render(
       node.type.call({}, { ...node.props, children: node.children }),
-      node.id.concat(0),
+      id.concat(0),
       context,
     );
 
@@ -158,7 +158,7 @@ export function render(nodeRaw, id = [0], context) {
   }
 
   if (node instanceof ElementVnode) {
-    node.children = renderArray(node.children, node.id, context);
+    node.children = renderArray(node.children, id, context);
 
     parseProps(node, context);
 

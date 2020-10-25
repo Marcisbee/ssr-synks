@@ -84,14 +84,14 @@ export function connect(win, doc, helpers, name, port, sessionName) {
     switch (patch.type) {
       case TEXT: {
         const node = getNodeByPath(root, patch.id);
-        node.textContent = patch.diff;
-        return;
+
+        return () => node.textContent = patch.diff;
       }
 
       case PROPS: {
         const node = getNodeByPath(root, patch.id);
-        patchProps(patch.diff, node);
-        return;
+
+        return () => patchProps(patch.diff, node);
       }
 
       case INSERT: {
@@ -100,20 +100,30 @@ export function connect(win, doc, helpers, name, port, sessionName) {
         const parent = getNodeByPath(root, id);
 
         if (parent.childNodes.length === 0) {
-          parent.innerHTML = patch.diff;
-          return;
+          return () => parent.innerHTML = patch.diff;
         }
 
         const node = parent.childNodes[lastId];
 
-        node.insertAdjacentHTML('beforebegin', patch.diff);
-        return;
+        // This means new node is created not updated
+        if (!node || !node.insertAdjacentHTML) {
+          const beforeNode = parent.childNodes[lastId - 1];
+
+          // It's a text node, it doesn't have `insertAdjacentHTML` method
+          if (!beforeNode || !beforeNode.insertAdjacentHTML) {
+            return () => parent.insertAdjacentHTML('beforeend', patch.diff);
+          }
+
+          return () => beforeNode.insertAdjacentHTML('afterend', patch.diff);
+        }
+
+        return () => node.insertAdjacentHTML('beforebegin', patch.diff);
       }
 
       case REMOVE: {
         const node = getNodeByPath(root, patch.id);
-        node.remove();
-        return;
+
+        return () => node.remove();
       }
     }
   }
@@ -180,7 +190,19 @@ export function connect(win, doc, helpers, name, port, sessionName) {
         if (rawPath && diff) {
           const root = getNodeByPath(document.body, rawPath);
 
-          diff.forEach((patch) => patchDiff(patch, root));
+          // Remove old nodes first
+          diff
+            .filter((d) => d.type === 4)
+            .map((patch) => patchDiff(patch, root))
+            .filter(Boolean)
+            .forEach((instructions) => instructions());
+
+          // Only then add and edit nodes
+          diff
+            .filter((d) => d.type !== 4)
+            .map((patch) => patchDiff(patch, root))
+            .filter(Boolean)
+            .forEach((instructions) => instructions());
         }
 
         return;
