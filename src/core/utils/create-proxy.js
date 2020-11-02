@@ -11,7 +11,6 @@ export function createProxy(target, onChange) {
         };
       }
 
-
       return item;
     },
     set(t, property, newValue) {

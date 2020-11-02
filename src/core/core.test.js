@@ -70,7 +70,7 @@ test('first', () => {
         ],
         id: [0, 1],
       },
-      id: '0.1',
+      id: [0, 1],
       diff: '<span>124</span>',
     },
   );
@@ -101,7 +101,7 @@ test('first', () => {
         ],
         id: [0],
       },
-      id: '0',
+      id: [0],
       diff: { class: 'bar' },
     },
   );
