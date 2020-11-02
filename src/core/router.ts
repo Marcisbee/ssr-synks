@@ -1,6 +1,11 @@
 import { createMatcher } from './utils/route-matcher.js';
 
 export class Router {
+	public routes: any;
+	public path: any;
+	public key: any;
+	public params: any;
+
   constructor({ initialPath, routes } = {}) {
     this.routes = routes;
     this._setParams(initialPath);

@@ -1,4 +1,4 @@
-export function connect(win, doc, helpers, name, port, sessionName) {
+export function connect(win?, doc?, helpers?, name?, port?, sessionName?) {
   const TEXT = 0;
   const NODE = 1;
   const PROPS = 2;

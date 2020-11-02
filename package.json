@@ -2,18 +2,20 @@
   "name": "resync",
   "version": "0.1.0",
   "description": "",
-  "type": "module",
-  "main": "src/core/index.js",
-  "module": "src/core/index.js",
+  "main": "dist/core/index.js",
+  "module": "dist/core/index.js",
   "engines": {
-    "node": ">=12.x"
+    "node": ">=10.x"
   },
   "bin": {
     "resync": "bin/resync.js"
   },
   "scripts": {
     "serve": "serve",
-    "start": "node src/index.js",
+    "build": "npm run build:core && npm run build:cli",
+    "build:core": "esbuild src/core/index.ts --bundle --outdir=dist/core --target=es2015 --platform=browser --sourcemap --log-level=error",
+    "build:cli": "esbuild src/index.ts --bundle --outdir=dist/cli --format=cjs --external:esbuild --external:ws --platform=node --sourcemap --log-level=error",
+    "start": "node dist/cli/index.js",
     "dev": "npm start --prefix ./app",
     "test": "node node_modules/jest/bin/jest.js",
     "uvu": "uvu src/core",
@@ -64,7 +66,8 @@
       "es6": true
     },
     "ignorePatterns": [
-      "app"
+      "app",
+      "dist"
     ],
     "extends": [
       "airbnb-base"

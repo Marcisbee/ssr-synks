@@ -1,4 +1,8 @@
 export class Vnode {
+	public id: any;
+	public instance: any;
+	public children: any;
+
   constructor() {
     /** @type {number[]} */
     this.id = [];

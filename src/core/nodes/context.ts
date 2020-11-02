@@ -1,6 +1,9 @@
 import { Vnode } from './generic.js';
 
 export class ContextVnode extends Vnode {
+	public type: any;
+	public props: any;
+
   constructor(type, props, children) {
     super();
 

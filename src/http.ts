@@ -8,10 +8,8 @@ import { build } from './build.js';
 import { connect } from './client.js';
 import * as config from './config.js';
 
-const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
-
 // @TODO:
-function getCookie(cookie, name) {
+function getCookie(cookie?, name?) {
   if (!cookie) return null;
 
   return (

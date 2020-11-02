@@ -2,7 +2,7 @@ import { toHTML } from './core/to-html.js';
 import { entry } from './entry.js';
 import { create } from './sessionController.js';
 
-export async function build(sessionId, cookie, initialPath) {
+export async function build(sessionId, cookie, initialPath?) {
   const session = create(sessionId, cookie);
 
   if (session.html) {
