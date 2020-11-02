@@ -88,6 +88,14 @@
         "env": {
           "jest": true
         }
+      },
+      {
+        "files": [
+          "bin/resync.js"
+        ],
+        "rules": {
+          "max-len": "off"
+        }
       }
     ],
     "rules": {

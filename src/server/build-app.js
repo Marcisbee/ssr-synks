@@ -6,7 +6,6 @@ export async function buildApp() {
   const indexPath = resolve(packageJSON.main);
 
   return esbuild.build({
-    stdio: 'inherit',
     entryPoints: [indexPath],
     outfile: './dist/main.js',
     minify: false,
