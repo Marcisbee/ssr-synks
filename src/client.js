@@ -128,114 +128,110 @@ export function connect(win, doc, helpers, name, port, sessionName) {
     }
   }
 
-  function ResyncConnect() {
-    const ws = new WebSocket(`ws://localhost:${port}`);
+  const ws = new WebSocket(`ws://localhost:${port}`);
 
-    ws.onopen = () => {
-      isConnected = true;
-      document.body.className = 'connected';
-      console.log('[open] Connection established');
+  ws.onopen = () => {
+    isConnected = true;
+    document.body.className = 'connected';
+    console.log('[open] Connection established');
 
-      win.onpopstate = () => {
-        const url = win.location.href.replace(win.location.origin, '');
-        ws.send(JSON.stringify([
-          'navigate',
-          url,
-        ]));
-      };
-
-      win.__sx = (id, e) => {
-        ws.send(JSON.stringify([
-          'event',
-          id,
-          e.type,
-          syntheticEvent(e),
-        ]));
-      };
-
-      win.__sn = (e) => {
-        if (isConnected) {
-          e.preventDefault();
-        }
-        const url = e.target.href.replace(win.location.origin, '');
-        win.history.pushState(undefined, document.title, url);
-        ws.send(JSON.stringify([
-          'navigate',
-          url,
-        ]));
-      };
-
-      const session = win[sessionName];
-      const cookie = helpers.getCookie(doc.cookie, name);
-
+    win.onpopstate = () => {
+      const url = win.location.href.replace(win.location.origin, '');
       ws.send(JSON.stringify([
-        'join',
-        session,
-        cookie,
+        'navigate',
+        url,
       ]));
-
-      // ws.send("My name is John");
     };
 
-    ws.onmessage = (event) => {
-      const [type, ...data] = JSON.parse(event.data);
+    win.__sx = (id, e) => {
+      ws.send(JSON.stringify([
+        'event',
+        id,
+        e.type,
+        syntheticEvent(e),
+      ]));
+    };
 
-      if (type === 'no-change') {
-        return;
+    win.__sn = (e) => {
+      if (isConnected) {
+        e.preventDefault();
+      }
+      const url = e.target.href.replace(win.location.origin, '');
+      win.history.pushState(undefined, document.title, url);
+      ws.send(JSON.stringify([
+        'navigate',
+        url,
+      ]));
+    };
+
+    const session = win[sessionName];
+    const cookie = helpers.getCookie(doc.cookie, name);
+
+    ws.send(JSON.stringify([
+      'join',
+      session,
+      cookie,
+    ]));
+
+    // ws.send("My name is John");
+  };
+
+  ws.onmessage = (event) => {
+    const [type, ...data] = JSON.parse(event.data);
+
+    if (type === 'no-change') {
+      return;
+    }
+
+    if (type === 'update') {
+      const [rawPath, diff] = data;
+
+      if (rawPath && diff) {
+        const root = getNodeByPath(document.body, rawPath);
+
+        // Remove old nodes first
+        diff
+          .filter((d) => d.type === 4)
+          .map((patch) => patchDiff(patch, root))
+          .filter(Boolean)
+          .forEach((instructions) => instructions());
+
+        // Only then add and edit nodes
+        diff
+          .filter((d) => d.type !== 4)
+          .map((patch) => patchDiff(patch, root))
+          .filter(Boolean)
+          .forEach((instructions) => instructions());
       }
 
-      if (type === 'update') {
-        const [rawPath, diff] = data;
+      return;
+    }
 
-        if (rawPath && diff) {
-          const root = getNodeByPath(document.body, rawPath);
+    // Object.keys(update).forEach((key) => {
+    //   document.getElementById(key).innerHTML = update[key];
+    // });
 
-          // Remove old nodes first
-          diff
-            .filter((d) => d.type === 4)
-            .map((patch) => patchDiff(patch, root))
-            .filter(Boolean)
-            .forEach((instructions) => instructions());
+    // connection.innerHTML = `data: ${event.data}`;
+    // console.log(`[message] Data received from server: ${event.data}`);
+  };
 
-          // Only then add and edit nodes
-          diff
-            .filter((d) => d.type !== 4)
-            .map((patch) => patchDiff(patch, root))
-            .filter(Boolean)
-            .forEach((instructions) => instructions());
-        }
+  ws.onclose = (event) => {
+    isConnected = false;
+    document.body.className = '';
+    // connection.innerHTML = 'close';
+    if (event.wasClean) {
+      console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+    } else {
+      // e.g. server process killed or network down
+      // event.code is usually 1006 in this case
+      console.log('[close] Connection died');
 
-        return;
-      }
+      setTimeout(connect, 3000, win, doc, helpers, name, port);
+    }
+  };
 
-      // Object.keys(update).forEach((key) => {
-      //   document.getElementById(key).innerHTML = update[key];
-      // });
-
-      // connection.innerHTML = `data: ${event.data}`;
-      // console.log(`[message] Data received from server: ${event.data}`);
-    };
-
-    ws.onclose = (event) => {
-      isConnected = false;
-      document.body.className = '';
-      // connection.innerHTML = 'close';
-      if (event.wasClean) {
-        console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
-      } else {
-        // e.g. server process killed or network down
-        // event.code is usually 1006 in this case
-        console.log('[close] Connection died');
-
-        setTimeout(connect, 3000, win, doc, helpers, name, port);
-      }
-    };
-
-    ws.onerror = () => {
-      ws.close();
-      // connection.innerHTML = `error: ${error.message}`;
-    };
-  }
-
-  win.ResyncConnect = ResyncConnect;
+  ws.onerror = () => {
+    ws.close();
+    // connection.innerHTML = `error: ${error.message}`;
+  };
 }

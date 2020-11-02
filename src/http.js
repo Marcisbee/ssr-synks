@@ -47,6 +47,7 @@ function htmlStructure({ css, app, sessionId }) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Document</title>
   <meta name="Description" content="Put your description here." />
+  <link rel="preload" href="/client.js" as="script" />
   <script>
     window.${config.session.name} = ${JSON.stringify(sessionId)};
   </script>
@@ -88,11 +89,11 @@ function htmlStructure({ css, app, sessionId }) {
       border-radius: 4px;
     }
   </style>
-  <script src="/client.js"></script>
+  <script src="/client.js" defer></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/14.4.0/primer.css" />
 </head>
 
-<body>${app || ''}<script>ResyncConnect();</script></body>
+<body>${app || ''}</body>
 
 </html>`;
 }
