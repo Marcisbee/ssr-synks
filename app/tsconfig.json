@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "commonjs",
+        "jsx": "react",
+        "jsxFactory": "Resync.h",
+        "jsxFragmentFactory": "Resync.Fragment"
+    }
+}

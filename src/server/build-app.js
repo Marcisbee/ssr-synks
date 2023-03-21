@@ -5,7 +5,7 @@ export async function buildApp() {
   const { default: packageJSON } = await import(resolve('./package.json'), { assert: { type: "json" } });
   const indexPath = resolve(packageJSON.main);
 
-  return esbuild.build({
+  const context = await esbuild.context({
     entryPoints: [indexPath],
     outfile: './dist/main.js',
     minify: false,
@@ -16,6 +16,8 @@ export async function buildApp() {
     format: 'esm',
     platform: 'node',
     external: ['resync'],
-  })
-    .catch(() => process.exit(1));
+  });
+
+  return context.watch()
+    .catch((e) => { console.log({ e }); process.exit(1) });
 }
