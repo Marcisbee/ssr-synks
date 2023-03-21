@@ -2,7 +2,7 @@ import esbuild from 'esbuild';
 import { resolve } from 'path';
 
 export async function buildApp() {
-  const { default: packageJSON } = await import(resolve('./package.json'));
+  const { default: packageJSON } = await import(resolve('./package.json'), { assert: { type: "json" } });
   const indexPath = resolve(packageJSON.main);
 
   return esbuild.build({

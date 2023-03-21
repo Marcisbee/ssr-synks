@@ -1,4 +1,4 @@
-import WebSocket from 'ws';
+import { WebSocketServer } from 'ws';
 
 // import nodeCookie from 'node-cookie';
 import { build } from './build.js';
@@ -11,7 +11,7 @@ import {
   unsubscribe,
 } from './sessionController.js';
 
-const wss = new WebSocket.Server({ port: socket.port });
+const wss = new WebSocketServer({ port: socket.port });
 
 export function startSocket() {
   wss.on('connection', (ws) => {

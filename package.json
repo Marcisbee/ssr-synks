@@ -1,128 +1,38 @@
 {
-  "name": "resync",
-  "version": "0.1.0",
-  "description": "",
-  "type": "module",
-  "main": "src/core/index.js",
-  "module": "src/core/index.js",
-  "engines": {
-    "node": ">=12.x"
-  },
-  "bin": {
-    "resync": "bin/resync.js"
-  },
-  "scripts": {
-    "serve": "serve",
-    "start": "node src/index.js",
-    "dev": "npm start --prefix ./app",
-    "test": "node node_modules/jest/bin/jest.js",
-    "uvu": "uvu src .test.js$",
-    "lint": "eslint ./src"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Marcisbee/ssr-synks.git"
-  },
-  "author": "Marcis <marcisbergmanis@gmail.com> Bergmanis",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Marcisbee/ssr-synks/issues"
-  },
-  "homepage": "https://github.com/Marcisbee/ssr-synks#readme",
-  "dependencies": {
-    "esbuild": "^0.8.15",
-    "node-cookie": "^2.1.2",
-    "ws": "^7.4.0"
-  },
-  "devDependencies": {
-    "@babel/preset-env": "^7.12.7",
-    "@types/jest": "^26.0.15",
-    "eslint": "^7.14.0",
-    "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-simple-import-sort": "^6.0.1",
-    "jest": "^26.6.3",
-    "serve": "^11.3.2",
-    "uvu": "^0.5.0"
-  },
-  "babel": {
-    "presets": [
-      [
-        "@babel/preset-env",
-        {
-          "targets": {
-            "node": "13.2"
-          },
-          "modules": "commonjs"
-        }
-      ]
-    ]
-  },
-  "eslintConfig": {
-    "env": {
-      "browser": true,
-      "es6": true
+    "name": "resync",
+    "version": "0.1.0",
+    "description": "",
+    "type": "module",
+    "main": "src/core/index.js",
+    "module": "src/core/index.js",
+    "engines": {
+        "node": ">=16.x"
     },
-    "ignorePatterns": [
-      "app"
-    ],
-    "extends": [
-      "airbnb-base"
-    ],
-    "globals": {
-      "Atomics": "readonly",
-      "SharedArrayBuffer": "readonly"
+    "bin": {
+        "resync": "bin/resync.js"
     },
-    "parserOptions": {
-      "ecmaVersion": 11,
-      "sourceType": "module"
+    "scripts": {
+        "serve": "serve",
+        "start": "node src/index.js",
+        "dev": "npm start --prefix ./app",
+        "test": "uvu src .test.js$"
     },
-    "plugins": [
-      "simple-import-sort"
-    ],
-    "overrides": [
-      {
-        "files": [
-          "**/*.test.js"
-        ],
-        "env": {
-          "jest": true
-        }
-      },
-      {
-        "files": [
-          "bin/resync.js"
-        ],
-        "rules": {
-          "max-len": "off"
-        }
-      }
-    ],
-    "rules": {
-      "import/prefer-default-export": "off",
-      "import/no-cycle": "off",
-      "default-case": "off",
-      "no-useless-return": "off",
-      "no-underscore-dangle": "off",
-      "no-restricted-syntax": "off",
-      "no-param-reassign": "off",
-      "no-return-assign": "off",
-      "no-await-in-loop": "off",
-      "guard-for-in": "off",
-      "consistent-return": "off",
-      "new-cap": "off",
-      "sort-imports": [
-        "error",
-        {
-          "ignoreDeclarationSort": true
-        }
-      ],
-      "import/extensions": [
-        "error",
-        "ignorePackages"
-      ],
-      "simple-import-sort/imports": "error",
-      "simple-import-sort/exports": "error"
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Marcisbee/ssr-synks.git"
+    },
+    "author": "Marcis <marcisbergmanis@gmail.com> Bergmanis",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/Marcisbee/ssr-synks/issues"
+    },
+    "homepage": "https://github.com/Marcisbee/ssr-synks#readme",
+    "dependencies": {
+        "esbuild": "^0.17.12",
+        "node-cookie": "^2.1.2",
+        "ws": "^8.13.0"
+    },
+    "devDependencies": {
+        "uvu": "^0.5.6"
     }
-  }
 }
