@@ -1,6 +1,6 @@
 import Resync from 'resync';
 
-export function DefaultLayout({ children }) {
+export function DefaultLayout({ children }: { children?: any }) {
   return (
     <div id="app">
       <a class="skip-link" href="#maincontent">Skip to main</a>
