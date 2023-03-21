@@ -15,7 +15,7 @@ export async function entry({
   props = {},
 } = {}) {
   const { initialPath } = props;
-  const routes = (await import(`${resolve('./dist/main.js')}?update=${Date.now()}`)).default;
+  const routes = (await import(`${resolve('./dist/main.js')}?hmr=${Date.now()}`)).default;
 
   const session = sessionController.get(props.sessionId);
 
