@@ -2,8 +2,8 @@ import Resync from 'resync';
 
 export function DefaultLayout({ children }: { children?: any }) {
   return (
-    <div id="app">
-      <a class="skip-link" href="#maincontent">Skip to main</a>
+    <div id="app" class="p-3">
+      {/* <a class="skip-link" href="#maincontent">Skip to main</a> */}
 
       <nav class="pagination">
         <a href="/">Home</a>

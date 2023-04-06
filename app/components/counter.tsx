@@ -19,11 +19,10 @@ export function* Counter2() {
     yield (
       <div>
         <h1>{counter.count}</h1>
-        {counter.count % 2 && <b>boop</b>}
+        {counter.count % 2 ? <b>odd</b> : 'even'}
+        <br />
         <button class="btn mr-2" onclick={counter.increment}>+</button>
         <button class="btn mr-2" onclick={counter.decrement}>-</button>
-        <br />
-        <button class="btn btn-sm" onclick={counter.increment}>+</button>
       </div>
     );
   }
